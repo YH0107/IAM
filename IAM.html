@@ -12,13 +12,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Nanum+Myeongjo:wght@400;700;800&family=Song+Myung&display=swap" rel="stylesheet">
   
   <style>
-    /* 타자기 스타일 폰트 및 감성적 명조체 조합 */
+    /* 기본 라이트모드 스타일 (부드러운 색상 전환 추가) */
     body {
       font-family: 'Courier Prime', 'Song Myung', 'Nanum Myeongjo', Courier, monospace, serif;
       background-color: #F5EFEB; /* 따뜻한 베이지 배경 */
       color: #3D3A37; /* 다크 차콜 글씨색 */
       overflow-x: hidden;
       scroll-behavior: smooth;
+      transition: background-color 0.7s cubic-bezier(0.4, 0, 0.2, 1), color 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 다크모드 스타일 강제 클래스 */
+    body.dark-mode {
+      background-color: #23211F; /* 묵직하고 차분한 다크 초콜릿 배경 */
+      color: #EFE7E1; /* 부드러운 소프트 크림 화이트 글씨색 */
     }
 
     /* 커스텀 노이즈 효과 */
@@ -52,11 +59,16 @@
       text-shadow: 2px 2px #3bc0c0, -2px -2px #ff4b5c;
     }
 
-    /* 둥글둥글하고 세련된 보색 포인트 인터랙션 */
+    /* 둥글둥글하고 세련된 보색 포인트 인터랙션 (라이트/다크 대응) */
     .interactive-btn {
       background-color: #3D3A37;
       color: #F5EFEB;
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    body.dark-mode .interactive-btn {
+      background-color: #EFE7E1;
+      color: #23211F;
     }
 
     .interactive-btn:hover {
@@ -64,6 +76,11 @@
       color: #F6F6F6;
       transform: translateY(-3px) scale(1.02);
       box-shadow: 0 8px 24px rgba(56, 128, 135, 0.25);
+    }
+
+    body.dark-mode .interactive-btn:hover {
+      background-color: #4ca3ab; /* 다크모드 대응 살짝 더 밝은 테일 민트 블루 */
+      color: #23211F;
     }
 
     .interactive-btn:active {
@@ -115,6 +132,9 @@
     ::-webkit-scrollbar-track {
       background: #F5EFEB;
     }
+    body.dark-mode ::-webkit-scrollbar-track {
+      background: #23211F;
+    }
     ::-webkit-scrollbar-thumb {
       background: #C4B3A5;
       border-radius: 9999px;
@@ -129,14 +149,28 @@
   <!-- 노이즈 효과용 오버레이 -->
   <div class="noise-overlay" id="noiseOverlay"></div>
 
+  <!-- 다크모드 플로팅 토글 버튼 (우측 상단 상시 고정) -->
+  <div class="fixed top-6 right-6 z-50 flex items-center space-x-2">
+    <button onclick="toggleDarkMode()" class="w-12 h-12 rounded-full bg-[#EFE7E1] dark-toggle-btn border border-[#D9CFC7] shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 focus:outline-none" title="테마 전환">
+      <!-- 해 모양 아이콘 (라이트모드일 때 보임) -->
+      <svg id="sunIcon" class="w-6 h-6 text-[#3D3A37]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path>
+      </svg>
+      <!-- 달 모양 아이콘 (다크모드일 때 보임 - 기본 숨김) -->
+      <svg id="moonIcon" class="w-6 h-6 text-[#EFE7E1] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+      </svg>
+    </button>
+  </div>
+
   <!-- 1. 로그인 퀴즈 화면 -->
-  <section id="loginScreen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F5EFEB] p-6 transition-all duration-1000 ease-in-out">
-    <div class="max-w-md w-full bg-[#EFE7E1] rounded-[2.5rem] p-8 md:p-10 shadow-xl border border-[#D9CFC7] text-center transform transition-transform duration-700">
+  <section id="loginScreen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F5EFEB] dark:bg-[#23211F] p-6 transition-all duration-1000 ease-in-out">
+    <div class="max-w-md w-full bg-[#EFE7E1] dark-card rounded-[2.5rem] p-8 md:p-10 shadow-xl border border-[#D9CFC7] text-center transform transition-transform duration-700 transition-colors duration-700">
       <div class="mb-8">
         <div class="w-16 h-16 bg-[#388087] text-[#F5EFEB] rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-md">
           ?
         </div>
-        <h1 class="text-2xl font-bold tracking-tight text-[#3D3A37] mb-2 font-serif">IDENTITY VERIFICATION</h1>
+        <h1 class="text-2xl font-bold tracking-tight text-[#3D3A37] dark-text mb-2 font-serif">IDENTITY VERIFICATION</h1>
         <p class="text-sm text-gray-500 font-sans">질문에 정확히 답해야 내부로 진입할 수 있습니다.</p>
       </div>
 
@@ -144,20 +178,20 @@
       <div class="space-y-6 text-left">
         <!-- 질문 1 -->
         <div class="space-y-1">
-          <label class="block text-sm font-semibold text-gray-700 font-serif">Q1. 가장 좋아하는 음식은?</label>
-          <input type="text" id="answer1" placeholder="답을 입력하세요" class="w-full px-4 py-3 bg-[#F5EFEB] border border-[#D2C5B9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#388087] focus:border-transparent transition text-base placeholder-gray-400">
+          <label class="block text-sm font-semibold text-gray-700 dark-text font-serif">Q1. 가장 좋아하는 음식은?</label>
+          <input type="text" id="answer1" placeholder="답을 입력하세요" class="w-full px-4 py-3 bg-[#F5EFEB] dark-input border border-[#D2C5B9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#388087] focus:border-transparent transition text-base placeholder-gray-400">
         </div>
 
         <!-- 질문 2 -->
         <div class="space-y-1">
-          <label class="block text-sm font-semibold text-gray-700 font-serif">Q2. 가장 좋아하는 취미는?</label>
-          <input type="text" id="answer2" placeholder="답을 입력하세요" class="w-full px-4 py-3 bg-[#F5EFEB] border border-[#D2C5B9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#388087] focus:border-transparent transition text-base placeholder-gray-400">
+          <label class="block text-sm font-semibold text-gray-700 dark-text font-serif">Q2. 가장 좋아하는 취미는?</label>
+          <input type="text" id="answer2" placeholder="답을 입력하세요" class="w-full px-4 py-3 bg-[#F5EFEB] dark-input border border-[#D2C5B9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#388087] focus:border-transparent transition text-base placeholder-gray-400">
         </div>
 
         <!-- 질문 3 -->
         <div class="space-y-1">
-          <label class="block text-sm font-semibold text-gray-700 font-serif">Q3. 사람인가요?</label>
-          <input type="text" id="answer3" placeholder="답을 입력하세요" class="w-full px-4 py-3 bg-[#F5EFEB] border border-[#D2C5B9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#388087] focus:border-transparent transition text-base placeholder-gray-400">
+          <label class="block text-sm font-semibold text-gray-700 dark-text font-serif">Q3. 사람인가요?</label>
+          <input type="text" id="answer3" placeholder="답을 입력하세요" class="w-full px-4 py-3 bg-[#F5EFEB] dark-input border border-[#D2C5B9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#388087] focus:border-transparent transition text-base placeholder-gray-400">
         </div>
       </div>
 
@@ -177,11 +211,11 @@
     <!-- 첫 화면 인트로 헤더 -->
     <header class="text-center py-12 md:py-20 fade-in-section">
       <p class="text-xs uppercase tracking-[0.3em] text-[#388087] font-semibold mb-3">Front-End Developer Portfolio</p>
-      <h1 class="text-4xl md:text-6xl font-bold font-serif text-[#3D3A37] tracking-tight mb-6">
+      <h1 class="text-4xl md:text-6xl font-bold font-serif text-[#3D3A37] dark-text tracking-tight mb-6 transition-colors duration-700">
         The Archive of Mine
       </h1>
       <div class="w-24 h-1 bg-[#388087] mx-auto rounded-full"></div>
-      <p class="mt-6 text-sm md:text-base max-w-md mx-auto text-gray-600 leading-relaxed font-sans">
+      <p class="mt-6 text-sm md:text-base max-w-md mx-auto text-gray-600 dark-subtext leading-relaxed font-sans transition-colors duration-700">
         저를 설명하기 위해 손수 빚어낸 순수 웹 아카이브입니다. 아래로 스크롤하여 진솔한 발자취와 일상을 살펴보세요.
       </p>
     </header>
@@ -190,86 +224,86 @@
     <!-- 취미 순위 섹션 -->
     <section class="fade-in-section space-y-8">
       <div class="text-center">
-        <h2 class="text-3xl font-bold font-serif text-[#3D3A37] inline-block relative px-4">
+        <h2 class="text-3xl font-bold font-serif text-[#3D3A37] dark-text inline-block relative px-4 transition-colors duration-700">
           HOBBY RANKING
           <span class="absolute bottom-0 left-0 w-full h-[6px] bg-[#388087] opacity-20 -z-10"></span>
         </h2>
-        <p class="text-xs text-gray-500 mt-2">버튼을 클릭하면 각 취미의 깊은 사연을 들여다볼 수 있습니다.</p>
+        <p class="text-xs text-gray-500 dark-subtext mt-2 transition-colors duration-700">버튼을 클릭하면 각 취미의 깊은 사연을 들여다볼 수 있습니다.</p>
       </div>
 
       <!-- 아코디언 컨테이너 -->
       <div class="max-w-2xl mx-auto space-y-4">
         
         <!-- 취미 1 -->
-        <div class="accordion-item bg-[#EFE7E1] border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
-          <button onclick="toggleAccordion(0)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] transition-colors">
-            <span class="font-serif font-bold text-lg text-[#3D3A37]">1. 노래 (Vocal)</span>
+        <div class="accordion-item bg-[#EFE7E1] dark-card border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+          <button onclick="toggleAccordion(0)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] dark-hover transition-colors">
+            <span class="font-serif font-bold text-lg text-[#3D3A37] dark-text">1. 노래 (Vocal)</span>
             <span class="accordion-icon w-8 h-8 rounded-full bg-[#388087] text-[#F5EFEB] flex items-center justify-center text-xl transition-transform duration-300">
               +
             </span>
           </button>
-          <div class="accordion-content px-6 bg-[#F8F3EF]/60">
-            <p class="text-sm md:text-base leading-relaxed text-gray-600 font-sans">
+          <div class="accordion-content px-6 bg-[#F8F3EF]/60 dark-accordion-body">
+            <p class="text-sm md:text-base leading-relaxed text-gray-600 dark-subtext font-sans transition-colors duration-700">
               밴드 동아리 보컬 및 기타를 합니다. 장르를 크게 가리지 않고 좋아하는 편입니다.
             </p>
           </div>
         </div>
 
         <!-- 취미 2 -->
-        <div class="accordion-item bg-[#EFE7E1] border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
-          <button onclick="toggleAccordion(1)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] transition-colors">
-            <span class="font-serif font-bold text-lg text-[#3D3A37]">2. 게임 (Gaming)</span>
+        <div class="accordion-item bg-[#EFE7E1] dark-card border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+          <button onclick="toggleAccordion(1)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] dark-hover transition-colors">
+            <span class="font-serif font-bold text-lg text-[#3D3A37] dark-text">2. 게임 (Gaming)</span>
             <span class="accordion-icon w-8 h-8 rounded-full bg-[#388087] text-[#F5EFEB] flex items-center justify-center text-xl transition-transform duration-300">
               +
             </span>
           </button>
-          <div class="accordion-content px-6 bg-[#F8F3EF]/60">
-            <p class="text-sm md:text-base leading-relaxed text-gray-600 font-sans">
+          <div class="accordion-content px-6 bg-[#F8F3EF]/60 dark-accordion-body">
+            <p class="text-sm md:text-base leading-relaxed text-gray-600 dark-subtext font-sans transition-colors duration-700">
               롤, 배그, 로스트아크 등 장르 가리지 않고 다양한 게임을 해보았으며, 롤 시즌 4 다이아 출신, 오버워치 시즌 1 61점 출신입니다. 단, 에이징 커브가 왔습니다.
             </p>
           </div>
         </div>
 
         <!-- 취미 3 -->
-        <div class="accordion-item bg-[#EFE7E1] border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
-          <button onclick="toggleAccordion(2)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] transition-colors">
-            <span class="font-serif font-bold text-lg text-[#3D3A37]">3. 책읽기 & 글쓰기 (Read & Write)</span>
+        <div class="accordion-item bg-[#EFE7E1] dark-card border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+          <button onclick="toggleAccordion(2)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] dark-hover transition-colors">
+            <span class="font-serif font-bold text-lg text-[#3D3A37] dark-text">3. 책읽기 & 글쓰기 (Read & Write)</span>
             <span class="accordion-icon w-8 h-8 rounded-full bg-[#388087] text-[#F5EFEB] flex items-center justify-center text-xl transition-transform duration-300">
               +
             </span>
           </button>
-          <div class="accordion-content px-6 bg-[#F8F3EF]/60">
-            <p class="text-sm md:text-base leading-relaxed text-gray-600 font-sans">
+          <div class="accordion-content px-6 bg-[#F8F3EF]/60 dark-accordion-body">
+            <p class="text-sm md:text-base leading-relaxed text-gray-600 dark-subtext font-sans transition-colors duration-700">
               생각을 정제하여 활자로 새겨넣는 작업을 좋아합니다. 매일 마주하는 감정은 많고, 영감...? 같은건 없지만 매일 꾸준하게 스스로의 감정을 활자로 관리하는 편입니다.
             </p>
           </div>
         </div>
 
         <!-- 취미 4 -->
-        <div class="accordion-item bg-[#EFE7E1] border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
-          <button onclick="toggleAccordion(3)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] transition-colors">
-            <span class="font-serif font-bold text-lg text-[#3D3A37]">4. 기타 연습 (Guitar Practice)</span>
+        <div class="accordion-item bg-[#EFE7E1] dark-card border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+          <button onclick="toggleAccordion(3)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] dark-hover transition-colors">
+            <span class="font-serif font-bold text-lg text-[#3D3A37] dark-text">4. 기타 연습 (Guitar Practice)</span>
             <span class="accordion-icon w-8 h-8 rounded-full bg-[#388087] text-[#F5EFEB] flex items-center justify-center text-xl transition-transform duration-300">
               +
             </span>
           </button>
-          <div class="accordion-content px-6 bg-[#F8F3EF]/60">
-            <p class="text-sm md:text-base leading-relaxed text-gray-600 font-sans">
+          <div class="accordion-content px-6 bg-[#F8F3EF]/60 dark-accordion-body">
+            <p class="text-sm md:text-base leading-relaxed text-gray-600 dark-subtext font-sans transition-colors duration-700">
               벽에 막힐때도 많지만, 점점 느는 느낌이 쾌감을 줍니다. 도파민 중독자로써는 참을 수 없는 유혹입니다.
             </p>
           </div>
         </div>
 
         <!-- 취미 5 -->
-        <div class="accordion-item bg-[#EFE7E1] border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
-          <button onclick="toggleAccordion(4)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] transition-colors">
-            <span class="font-serif font-bold text-lg text-[#3D3A37]">5. 후배들 놀리기 (Friendly Teasing)</span>
+        <div class="accordion-item bg-[#EFE7E1] dark-card border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+          <button onclick="toggleAccordion(4)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] dark-hover transition-colors">
+            <span class="font-serif font-bold text-lg text-[#3D3A37] dark-text">5. 후배들 놀리기 (Friendly Teasing)</span>
             <span class="accordion-icon w-8 h-8 rounded-full bg-[#388087] text-[#F5EFEB] flex items-center justify-center text-xl transition-transform duration-300">
               +
             </span>
           </button>
-          <div class="accordion-content px-6 bg-[#F8F3EF]/60">
-            <p class="text-sm md:text-base leading-relaxed text-gray-600 font-sans">
+          <div class="accordion-content px-6 bg-[#F8F3EF]/60 dark-accordion-body">
+            <p class="text-sm md:text-base leading-relaxed text-gray-600 dark-subtext font-sans transition-colors duration-700">
               재밌습니다.
             </p>
           </div>
@@ -282,24 +316,24 @@
     <!-- 시간표 섹션 -->
     <section class="fade-in-section space-y-12">
       <div class="text-center">
-        <h2 class="text-3xl font-bold font-serif text-[#3D3A37] inline-block relative px-4">
+        <h2 class="text-3xl font-bold font-serif text-[#3D3A37] dark-text inline-block relative px-4 transition-colors duration-700">
           DAILY SCHEDULE WHEEL
           <span class="absolute bottom-0 left-0 w-full h-[6px] bg-[#388087] opacity-20 -z-10"></span>
         </h2>
-        <p class="text-xs text-gray-500 mt-2">마우스를 올리거나 터치하면 시간대별 활동 내역이 입체적으로 하이라이트됩니다.</p>
+        <p class="text-xs text-gray-500 dark-subtext mt-2 transition-colors duration-700">마우스를 올리거나 터치하면 시간대별 활동 내역이 입체적으로 하이라이트됩니다.</p>
       </div>
 
       <!-- 원형 시계 영역 -->
-      <div class="flex flex-col lg:flex-row items-center justify-center gap-12 bg-[#EFE7E1] p-6 md:p-10 rounded-[3rem] border border-[#D9CFC7] shadow-sm">
+      <div class="flex flex-col lg:flex-row items-center justify-center gap-12 bg-[#EFE7E1] dark-card p-6 md:p-10 rounded-[3rem] border border-[#D9CFC7] shadow-sm transition-colors duration-700">
         
         <!-- 대형 SVG 시계 -->
         <div class="relative w-full max-w-[400px] aspect-square flex items-center justify-center">
           <svg id="clockSvg" viewBox="0 0 400 400" class="w-full h-full transform -rotate-90 select-none">
-            <!-- 시계 베이스 원 배경 -->
-            <circle cx="200" cy="200" r="180" fill="#FBF8F6" stroke="#D9CFC7" stroke-width="4"/>
+            <!-- 시계 베이스 원 배경 (다크모드 대응을 위해 클래스 추가) -->
+            <circle id="clockBaseCircle" cx="200" cy="200" r="180" fill="#FBF8F6" stroke="#D9CFC7" stroke-width="4"/>
             <!-- 24시간 중심축 눈금 및 디테일 서클 -->
             <circle cx="200" cy="200" r="130" fill="none" stroke="#E2D7CE" stroke-width="2" stroke-dasharray="5,5"/>
-            <circle cx="200" cy="200" r="6" fill="#3D3A37"/>
+            <circle id="centerPin" cx="200" cy="200" r="6" fill="#3D3A37"/>
             
             <!-- JavaScript에서 동적으로 시간표 섹터를 렌더링합니다. -->
             <g id="sectorsContainer"></g>
@@ -311,36 +345,36 @@
 
         <!-- 실시간 세부 디테일 카드 -->
         <div class="w-full lg:w-1/2 flex flex-col justify-between space-y-6">
-          <div class="bg-[#F5EFEB] p-6 rounded-3xl border border-[#D9CFC7] min-h-[180px] flex flex-col justify-center">
+          <div class="bg-[#F5EFEB] dark-body-color p-6 rounded-3xl border border-[#D9CFC7] min-h-[180px] flex flex-col justify-center transition-colors duration-700">
             <div class="flex items-center space-x-3 mb-2">
               <span id="detailBadge" class="px-3 py-1 bg-[#388087] text-[#F5EFEB] text-xs font-bold rounded-full font-serif">00:00 - 00:00</span>
-              <span id="detailTitle" class="text-lg font-bold font-serif text-[#3D3A37]">선택하거나 오버하세요</span>
+              <span id="detailTitle" class="text-lg font-bold font-serif text-[#3D3A37] dark-text">선택하거나 오버하세요</span>
             </div>
-            <p id="detailDescription" class="text-sm text-gray-600 leading-relaxed font-sans">
+            <p id="detailDescription" class="text-sm text-gray-600 dark-subtext leading-relaxed font-sans transition-colors duration-700">
               시계의 부채꼴 영역에 마우스를 대면 해당하는 일정의 상세 정보가 여기에 표시됩니다.
             </p>
           </div>
 
           <!-- LLM 스케줄 도우미 -->
-          <div class="bg-[#F5EFEB] p-6 rounded-3xl border border-[#D9CFC7] space-y-4">
+          <div class="bg-[#F5EFEB] dark-body-color p-6 rounded-3xl border border-[#D9CFC7] space-y-4 transition-colors duration-700">
             <div class="flex items-center justify-between">
-              <h4 class="text-sm font-bold font-serif text-[#3D3A37]">AI 일과 첨삭 어시스턴트</h4>
+              <h4 class="text-sm font-bold font-serif text-[#3D3A37] dark-text">AI 일과 첨삭 어시스턴트</h4>
               <span class="flex h-2 w-2 relative">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
             </div>
-            <p class="text-xs text-gray-500 leading-relaxed font-sans">
+            <p class="text-xs text-gray-500 dark-subtext leading-relaxed font-sans">
               "좀비 모드를 줄이고 싶어", "더 효율적인 하루 조언해줘" 처럼 질문을 던져 하루 스케줄을 분석해보세요!
             </p>
             <div class="flex space-x-2">
-              <input type="text" id="aiInput" placeholder="일정에 대해 질문해 보세요..." class="flex-1 px-4 py-2 bg-[#EFE7E1] border border-[#D2C5B9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#388087] text-xs">
+              <input type="text" id="aiInput" placeholder="일정에 대해 질문해 보세요..." class="flex-1 px-4 py-2 bg-[#EFE7E1] dark-card border border-[#D2C5B9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#388087] text-xs transition-colors duration-700">
               <button onclick="getScheduleAdvice()" class="px-4 py-2 text-xs font-bold interactive-btn rounded-2xl font-serif">
                 SEND
               </button>
             </div>
             <!-- AI 답변 출력창 -->
-            <div id="aiResponse" class="hidden p-3 bg-[#EFE7E1] rounded-2xl text-xs text-gray-600 max-h-40 overflow-y-auto leading-relaxed border border-[#E2D7CE] font-sans">
+            <div id="aiResponse" class="hidden p-3 bg-[#EFE7E1] dark-card rounded-2xl text-xs text-gray-600 dark-subtext max-h-40 overflow-y-auto leading-relaxed border border-[#E2D7CE] font-sans transition-colors duration-700">
               <!-- 답변이 기입됩니다 -->
             </div>
           </div>
@@ -353,77 +387,77 @@
     <!-- 개인적인 경험 및 이력 섹션 -->
     <section class="fade-in-section space-y-12">
       <div class="text-center">
-        <h2 class="text-3xl font-bold font-serif text-[#3D3A37] inline-block relative px-4">
+        <h2 class="text-3xl font-bold font-serif text-[#3D3A37] dark-text inline-block relative px-4 transition-colors duration-700">
           PERSONAL ARCHIVE
           <span class="absolute bottom-0 left-0 w-full h-[6px] bg-[#388087] opacity-20 -z-10"></span>
         </h2>
-        <p class="text-xs text-gray-500 mt-2">인생의 크고 작은 사건들, 개성이 가득 찬 다채로운 궤적들입니다.</p>
+        <p class="text-xs text-gray-500 dark-subtext mt-2 transition-colors duration-700">인생의 크고 작은 사건들, 개성이 가득 찬 다채로운 궤적들입니다.</p>
       </div>
 
       <!-- 이력 카드 뷰 -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         
         <!-- 카드 1 -->
-        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+        <div class="bg-[#EFE7E1] dark-card border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
           <div class="text-3xl mb-4">⏱️</div>
-          <h3 class="text-lg font-bold font-serif text-[#3D3A37] mb-2">부트캠프 2달</h3>
-          <p class="text-xs text-gray-500 leading-relaxed font-sans">
+          <h3 class="text-lg font-bold font-serif text-[#3D3A37] dark-text mb-2">부트캠프 2달</h3>
+          <p class="text-xs text-gray-500 dark-subtext leading-relaxed font-sans">
             짧지만 치열했던 60일의 도전. 밤을 지새우며 로직을 짜고, 웹의 근간을 바닥부터 갈고 닦으며 프론트엔드 핵심 인프라를 이해하게 된 단단한 디딤돌이었습니다.
           </p>
         </div>
 
         <!-- 카드 2 -->
-        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+        <div class="bg-[#EFE7E1] dark-card border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
           <div class="text-3xl mb-4">🎤</div>
-          <h3 class="text-lg font-bold font-serif text-[#3D3A37] mb-2">밴드 동아리 보컬</h3>
-          <p class="text-xs text-gray-500 leading-relaxed font-sans">
+          <h3 class="text-lg font-bold font-serif text-[#3D3A37] dark-text mb-2">밴드 동아리 보컬</h3>
+          <p class="text-xs text-gray-500 dark-subtext leading-relaxed font-sans">
             공명하는 드럼 소리 위로 제 목소리를 얹는 경험을 통해 무대 공포증을 극복하고, 수많은 부원과 협업하며 소통의 하모니가 지닌 찬란함을 배웠습니다.
           </p>
         </div>
 
         <!-- 카드 3 -->
-        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+        <div class="bg-[#EFE7E1] dark-card border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
           <div class="text-3xl mb-4">💼</div>
-          <h3 class="text-lg font-bold font-serif text-[#3D3A37] mb-2">아르바이트 대장정</h3>
-          <p class="text-xs text-gray-500 leading-relaxed font-sans">
+          <h3 class="text-lg font-bold font-serif text-[#3D3A37] dark-text mb-2">아르바이트 대장정</h3>
+          <p class="text-xs text-gray-500 dark-subtext leading-relaxed font-sans">
             세상의 다양한 층위에서 몸을 부딪치며 축적한 노동과 대인 관계 노하우. 어떤 척박한 환경 속에서도 끈질기게 적응해내는 생존 본능을 내재했습니다.
           </p>
         </div>
 
         <!-- 카드 4 -->
-        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+        <div class="bg-[#EFE7E1] dark-card border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
           <div class="text-3xl mb-4">💸</div>
-          <h3 class="text-lg font-bold font-serif text-[#3D3A37] mb-2">등골 브레이커 출신</h3>
-          <p class="text-xs text-gray-500 leading-relaxed font-sans">
+          <h3 class="text-lg font-bold font-serif text-[#3D3A37] dark-text mb-2">등골 브레이커 출신</h3>
+          <p class="text-xs text-gray-500 dark-subtext leading-relaxed font-sans">
             한때는 부모님의 기대와 지원을 듬뿍 빌려 쓰며 방황하기도 했지만, 그 소중함을 깨달은 뒤로는 1인분의 몫을 우뚝 서며 확실하게 보은하고자 하는 원동력입니다.
           </p>
         </div>
 
         <!-- 카드 5 -->
-        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+        <div class="bg-[#EFE7E1] dark-card border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
           <div class="text-3xl mb-4">✍️</div>
-          <h3 class="text-lg font-bold font-serif text-[#3D3A37] mb-2">SNS 글쓰기 100+</h3>
-          <p class="text-xs text-gray-500 leading-relaxed font-sans">
+          <h3 class="text-lg font-bold font-serif text-[#3D3A37] dark-text mb-2">SNS 글쓰기 100+</h3>
+          <p class="text-xs text-gray-500 dark-subtext leading-relaxed font-sans">
             꾸준히 제 사유의 조각들을 정비하고 공유해온 결과물. 가벼운 배설성 낙서가 아닌 진중한 내러티브를 지닌 독립적 스토리 아카이브를 자부합니다. (ㅋㅋ)
           </p>
         </div>
 
         <!-- 카드 6 -->
-        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+        <div class="bg-[#EFE7E1] dark-card border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
           <div class="text-3xl mb-4">🥗</div>
-          <h3 class="text-lg font-bold font-serif text-[#3D3A37] mb-2">성공적인 체중 감량</h3>
-          <p class="text-xs text-gray-500 leading-relaxed font-sans">
+          <h3 class="text-lg font-bold font-serif text-[#3D3A37] dark-text mb-2">성공적인 체중 감량</h3>
+          <p class="text-xs text-gray-500 dark-subtext leading-relaxed font-sans">
             엄격한 식단 관리와 생활 습관의 교정. 저 자신과의 지루한 약속을 지켜내며 획득한 슬림해진 피지컬은 끈기만 있다면 무엇이든 바꿀 수 있다는 증거입니다.
           </p>
         </div>
 
         <!-- 카드 7 -->
-        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 md:col-span-2 lg:col-span-3">
+        <div class="bg-[#EFE7E1] dark-card border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 md:col-span-2 lg:col-span-3">
           <div class="flex items-center space-x-4">
             <span class="text-3xl">🎮</span>
             <div>
-              <h3 class="text-lg font-bold font-serif text-[#3D3A37]">League of Legends 시즌 4 다이아몬드</h3>
-              <p class="text-xs text-gray-500 mt-1 leading-relaxed font-sans">
+              <h3 class="text-lg font-bold font-serif text-[#3D3A37] dark-text">League of Legends 시즌 4 다이아몬드</h3>
+              <p class="text-xs text-gray-500 dark-subtext mt-1 leading-relaxed font-sans transition-colors duration-700">
                 협곡의 가장 영예로운 꼭대기 문턱에 있었던 흔적. 수많은 변수들 속에서도 미니맵의 흐름을 빠르게 읽고, 순간의 기회를 기어코 포착해내는 고성능 멀티태스킹 뇌세포의 지표입니다.
               </p>
             </div>
@@ -434,7 +468,7 @@
 
       <!-- 에러 히든 트리거 버튼 -->
       <div class="flex justify-center pt-8">
-        <button onclick="triggerGlitchSequence()" class="w-14 h-14 rounded-full bg-[#E2D7CE] border-2 border-[#C4B3A5] hover:bg-[#388087] hover:text-[#F5EFEB] hover:border-transparent flex items-center justify-center text-2xl font-bold transition-all duration-300 shadow-sm focus:outline-none" title="Expand more">
+        <button onclick="triggerGlitchSequence()" class="w-14 h-14 rounded-full bg-[#E2D7CE] dark-toggle-btn border-2 border-[#C4B3A5] hover:bg-[#388087] hover:text-[#F5EFEB] hover:border-transparent flex items-center justify-center text-2xl font-bold transition-all duration-300 shadow-sm focus:outline-none" title="Expand more">
           +
         </button>
       </div>
@@ -445,12 +479,12 @@
 
   <!-- 3. 최하단 에러 플로팅 창 (시스템 에러인 척 유도) -->
   <section id="errorOverlay" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-[#F5EFEB] border-4 border-red-500 rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center transform scale-95 opacity-0 transition-all duration-300" id="errorModalBox">
+    <div class="bg-[#F5EFEB] dark-body-color border-4 border-red-500 rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center transform scale-95 opacity-0 transition-all duration-300" id="errorModalBox">
       <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-mono">
         ⚠
       </div>
-      <h3 class="text-xl font-bold font-serif text-[#3D3A37] mb-2">SYSTEM ERROR : 0x00A1F</h3>
-      <p class="text-sm text-gray-600 mb-6 font-sans leading-relaxed">
+      <h3 class="text-xl font-bold font-serif text-[#3D3A37] dark-text mb-2">SYSTEM ERROR : 0x00A1F</h3>
+      <p class="text-sm text-gray-600 dark-subtext mb-6 font-sans leading-relaxed">
         치명적인 코어 에러가 검출되었습니다. 데이터를 복구하고 메인 스페이스를 닫은 후 다음 단계로 이행해야 합니다.
       </p>
       <button onclick="confirmErrorAndProceed()" class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-2xl text-sm transition-all shadow-md active:scale-95 font-serif">
@@ -461,7 +495,7 @@
 
 
   <!-- 4. Who's Next 엔딩 화면 -->
-  <section id="endingScreen" class="fixed inset-0 z-40 hidden bg-[#F5EFEB] flex flex-col justify-between items-center p-8 transition-all duration-1000 opacity-0">
+  <section id="endingScreen" class="fixed inset-0 z-40 hidden bg-[#F5EFEB] dark:bg-[#23211F] flex flex-col justify-between items-center p-8 transition-all duration-1000 opacity-0">
     <!-- 상단 여백 및 탑 라벨 -->
     <div class="pt-8 text-center">
       <p class="text-xs uppercase tracking-[0.4em] text-[#388087] font-semibold">THE END OF CHAPTER</p>
@@ -469,11 +503,11 @@
 
     <!-- 화면의 물리적/기하학적 정중앙 영역 -->
     <div class="flex-1 flex flex-col justify-center items-center my-auto max-w-lg">
-      <h2 id="endingText" class="text-4xl md:text-6xl font-bold font-serif tracking-widest text-[#3D3A37] select-none leading-tight opacity-0 transform translate-y-4 transition-all duration-1000 ease-out text-center">
+      <h2 id="endingText" class="text-4xl md:text-6xl font-bold font-serif tracking-widest text-[#3D3A37] dark-text select-none leading-tight opacity-0 transform translate-y-4 transition-all duration-1000 ease-out text-center">
         Who's next?
       </h2>
-      <div class="w-16 h-[2px] bg-[#3D3A37]/30 my-6"></div>
-      <p class="text-xs text-gray-500 font-sans tracking-wide leading-relaxed text-center">
+      <div class="w-16 h-[2px] bg-[#3D3A37]/30 dark:bg-[#EFE7E1]/30 my-6"></div>
+      <p class="text-xs text-gray-500 dark-subtext font-sans tracking-wide leading-relaxed text-center">
         이제 당신의 이야기를 들려주실 차례입니다.<br>
         접속해 주셔서 대단히 감사합니다.
       </p>
@@ -481,7 +515,7 @@
 
     <!-- 하단 재시작 버튼 -->
     <div class="pb-8 text-center">
-      <button onclick="resetToBeginning()" class="px-6 py-3 border border-[#3D3A37] rounded-full text-xs font-serif uppercase tracking-wider text-[#3D3A37] hover:bg-[#3D3A37] hover:text-[#F5EFEB] transition-all duration-300">
+      <button onclick="resetToBeginning()" class="px-6 py-3 border border-[#3D3A37] dark:border-[#EFE7E1] rounded-full text-xs font-serif uppercase tracking-wider text-[#3D3A37] dark-text hover:bg-[#3D3A37] hover:text-[#F5EFEB] dark:hover:bg-[#EFE7E1] dark:hover:text-[#23211F] transition-all duration-300">
         RESTART ARCHIVE
       </button>
     </div>
@@ -489,7 +523,7 @@
 
 
   <!-- 푸터 (로그인 성공 시 아래 스티키하게 고정) -->
-  <footer id="mainFooter" class="hidden border-t border-[#D9CFC7] py-6 text-center text-xs text-gray-500 font-sans">
+  <footer id="mainFooter" class="hidden border-t border-[#D9CFC7] py-6 text-center text-xs text-gray-500 dark-subtext font-sans transition-colors duration-700">
     <p>© 2026 Developer Archive. Crafted with pure Vanilla HTML, CSS & JS.</p>
   </footer>
 
@@ -504,7 +538,6 @@
     };
 
     // 시간표 데이터 셋업
-    // 시계 각도 계산을 위해 소수점 시간을 일반 시간 형태로 포맷
     const SCHEDULE_ITEMS = [
       { start: "05:30", end: "06:00", title: "부활", desc: "이른 아침의 눈을 뜨는 눈부신 희망", color: "#E0ECE4" },
       { start: "06:00", end: "06:30", title: "아침 식사", desc: "생명 연장을 위한 가벼운 정량 섭취", color: "#F7D6C8" },
@@ -512,18 +545,17 @@
       { start: "07:20", end: "07:45", title: "출발 & 이동", desc: "셔틀을 향해 바쁘게 걷는 시간", color: "#C6E2E9" },
       { start: "07:45", end: "09:00", title: "셔틀 탑승", desc: "차창 밖을 보며 잠깐 모자란 숙면 충전", color: "#A8DADC" },
       { start: "09:00", end: "12:45", title: "좀비 모드 1단계", desc: "반복적인 로직 생산과 업무 루틴에 동화되는 시간", color: "#E5E5E5" },
-      { start: "12:45", end: "13:30", title: "점심 나이슷ㅋㅋ", desc: "드디어 꿀맛같은 보상, 배를 채우는 행복 수치 충족!", color: "#FBC4AB" },
+      { start: "12:45", end: "13:30", title: "밥은 먹고 살아야지", desc: "드디어 꿀맛같은 보상, 배를 채우는 행복 수치 충족!", color: "#FBC4AB" },
       { start: "13:30", end: "14:00", title: "부서 복귀", desc: "식후 가벼운 티타임 및 포만감 만끽", color: "#ECE4DB" },
       { start: "14:00", end: "18:00", title: "좀비 모드 2단계", desc: "오후 피로와의 힘겨운 싸움, 무한 타이핑", color: "#D2D2D2" },
       { start: "18:00", end: "19:00", title: "퇴근 나이슷ㅋㅋ", desc: "드디어 무거운 해방! 집 또는 다음 장소를 향한 잰걸음", color: "#FBC4AB" },
-      { start: "19:00", end: "20:30", title: "하단 도착 & 동코", desc: "목청 높여 노래 부르며 스트레스 완벽 해소(선택)", color: "#FFD166" },
+      { start: "19:00", end: "20:30", title: "하단 도착 & 동전노래방", desc: "목청 높여 노래 부르며 스트레스 완벽 해소(선택)", color: "#FFD166" },
       { start: "20:30", end: "21:00", title: "집 도착 후 샤워", desc: "바깥 먼지 씻어내고 온전한 홈웨어 모드로 전환", color: "#D3E0EA" },
-      { start: "21:00", end: "23:00", title: "게임 시작", desc: "가장 순수하게 짜릿해지는 모험의 시간", color: "#A8DADC" },
+      { start: "21:00", end: "23:00", title: "게임 시작", desc: "도파민 충전", color: "#A8DADC" },
       { start: "23:00", end: "24:00", title: "취침 준비", desc: "오늘 하루를 가라앉히는 릴랙스 시간", color: "#C4C4C4" },
-      { start: "00:00", end: "05:30", title: "글 기재 & 취침", desc: "SNS 일기 발행 후 내일을 위해 영면", color: "#9E9E9E" }
+      { start: "00:00", end: "05:30", title: "글 업로드 후 사망", desc: "SNS 일기 발행 후 내일을 위해 영면", color: "#9E9E9E" }
     ];
 
-    // API 키 부재 시 대체 작동할 똑똑하고 센스 넘치는 로컬 캐싱 대답 목록
     const MOCK_ADVICES = [
       "좀비 모드를 정복하려 하시는군요! 9시와 14시 좀비 모드 사이에 존재하는 '점심 나이슷ㅋㅋ' 타임을 적극 활용하여 고효율 포도당 수혈을 추천합니다. 커피는 필수!",
       "저녁 19시에 예정된 동전노래방(선택)은 보컬 출신으로서의 성대를 세밀하게 조율하는 가치 있는 시간입니다. 과감히 선곡을 넓혀보는 것은 어떨까요?",
@@ -538,6 +570,111 @@
       initInteractiveClock();
       setupScrollAnimations();
     };
+
+    // 다크모드/라이트모드 수동 스위칭 함수
+    function toggleDarkMode() {
+      const body = document.body;
+      const sunIcon = document.getElementById('sunIcon');
+      const moonIcon = document.getElementById('moonIcon');
+      const toggleBtn = document.querySelector('.dark-toggle-btn');
+      
+      body.classList.toggle('dark-mode');
+      
+      const isDarkMode = body.classList.contains('dark-mode');
+
+      // 1. 유틸리티성 Tailwind 컴포넌트 변환들을 세련되게 스크립트로 오버라이드 
+      const darkCards = document.querySelectorAll('.dark-card');
+      const darkTexts = document.querySelectorAll('.dark-text');
+      const darkSubtexts = document.querySelectorAll('.dark-subtext');
+      const darkInputs = document.querySelectorAll('.dark-input');
+      const darkAccordions = document.querySelectorAll('.dark-accordion-body');
+      const darkBodyColors = document.querySelectorAll('.dark-body-color');
+      const darkToggleButtons = document.querySelectorAll('.dark-toggle-btn');
+      
+      // 시계 요소들 변환
+      const clockBase = document.getElementById('clockBaseCircle');
+      const centerPin = document.getElementById('centerPin');
+
+      if (isDarkMode) {
+        // 다크모드 적용
+        sunIcon.classList.add('hidden');
+        moonIcon.classList.remove('hidden');
+        
+        if (toggleBtn) {
+          toggleBtn.style.backgroundColor = '#3D3A37';
+          toggleBtn.style.borderColor = '#524E4A';
+        }
+
+        darkCards.forEach(el => {
+          el.style.backgroundColor = '#2D2A27';
+          el.style.borderColor = '#423E3B';
+        });
+        darkTexts.forEach(el => el.style.color = '#F5EFEB');
+        darkSubtexts.forEach(el => el.style.color = '#C4B3A5');
+        darkInputs.forEach(el => {
+          el.style.backgroundColor = '#23211F';
+          el.style.borderColor = '#524E4A';
+          el.style.color = '#F5EFEB';
+        });
+        darkAccordions.forEach(el => el.style.backgroundColor = 'rgba(35, 33, 31, 0.6)');
+        darkBodyColors.forEach(el => {
+          el.style.backgroundColor = '#23211F';
+          el.style.borderColor = '#423E3B';
+        });
+        darkToggleButtons.forEach(el => {
+          el.style.backgroundColor = '#2D2A27';
+          el.style.borderColor = '#423E3B';
+        });
+
+        // 시계 다크모드
+        if (clockBase) {
+          clockBase.setAttribute('fill', '#2D2A27');
+          clockBase.setAttribute('stroke', '#423E3B');
+        }
+        if (centerPin) {
+          centerPin.setAttribute('fill', '#F5EFEB');
+        }
+      } else {
+        // 라이트모드 적용
+        sunIcon.classList.remove('hidden');
+        moonIcon.classList.add('hidden');
+
+        if (toggleBtn) {
+          toggleBtn.style.backgroundColor = '#EFE7E1';
+          toggleBtn.style.borderColor = '#D9CFC7';
+        }
+
+        darkCards.forEach(el => {
+          el.style.backgroundColor = '#EFE7E1';
+          el.style.borderColor = '#D9CFC7';
+        });
+        darkTexts.forEach(el => el.style.color = '#3D3A37');
+        darkSubtexts.forEach(el => el.style.color = '#4B5563'); // text-gray-600 유사색
+        darkInputs.forEach(el => {
+          el.style.backgroundColor = '#F5EFEB';
+          el.style.borderColor = '#D2C5B9';
+          el.style.color = '#3D3A37';
+        });
+        darkAccordions.forEach(el => el.style.backgroundColor = 'rgba(248, 243, 239, 0.6)');
+        darkBodyColors.forEach(el => {
+          el.style.backgroundColor = '#F5EFEB';
+          el.style.borderColor = '#D9CFC7';
+        });
+        darkToggleButtons.forEach(el => {
+          el.style.backgroundColor = '#E2D7CE';
+          el.style.borderColor = '#C4B3A5';
+        });
+
+        // 시계 라이트모드
+        if (clockBase) {
+          clockBase.setAttribute('fill', '#FBF8F6');
+          clockBase.setAttribute('stroke', '#D9CFC7');
+        }
+        if (centerPin) {
+          centerPin.setAttribute('fill', '#3D3A37');
+        }
+      }
+    }
 
     // 1. 퀴즈 검증 로직
     function checkQuizAnswers() {
@@ -557,16 +694,21 @@
           mainContent.classList.remove('hidden');
           mainFooter.classList.remove('hidden');
           
+          // 다크모드 적용 클래스 순차 바인딩
+          const isDark = document.body.classList.contains('dark-mode');
+          document.body.classList.remove('dark-mode');
+          if (isDark) {
+            document.body.classList.add('dark-mode');
+          }
+
           // 강제 레이아웃 트리거 후 투명도 복원
           setTimeout(() => {
             mainContent.classList.add('opacity-100');
-            // 스크롤 탑 복원 및 순차 등장 감지 작동
             window.scrollTo({ top: 0 });
             triggerScrollVisible();
           }, 50);
         }, 1000);
       } else {
-        // 에러 진동 혹은 피드백
         const err = document.getElementById('errorMessage');
         err.classList.remove('hidden');
         err.classList.add('animate-bounce');
@@ -600,7 +742,6 @@
     function timeToDegrees(timeStr) {
       const [hrs, mins] = timeStr.split(':').map(Number);
       const totalMins = hrs * 60 + mins;
-      // 24시간 = 1440분 = 360도 => 1분당 0.25도
       return totalMins * 0.25;
     }
 
@@ -608,13 +749,12 @@
       const sectorsContainer = document.getElementById('sectorsContainer');
       const cx = 200;
       const cy = 200;
-      const r = 160; // 섹터 반지름
+      const r = 160;
 
       SCHEDULE_ITEMS.forEach((item, idx) => {
         const startDeg = timeToDegrees(item.start);
         let endDeg = timeToDegrees(item.end);
         
-        // 24시 자정 처리 보정
         if (endDeg <= startDeg) {
           endDeg += 360;
         }
@@ -627,10 +767,8 @@
         const x2 = cx + r * Math.cos(endRad);
         const y2 = cy + r * Math.sin(endRad);
 
-        // 큰 호 플래그 판정 (각도가 180도보다 크면 1, 아니면 0)
         const largeArcFlag = (endDeg - startDeg) > 180 ? 1 : 0;
 
-        // SVG 패스 생성
         const pathData = `
           M ${cx} ${cy}
           L ${x1} ${y1}
@@ -646,17 +784,15 @@
         path.setAttribute('class', 'schedule-sector');
         path.style.transformOrigin = '200px 200px';
 
-        // 인터랙션 이벤트 바인딩
         path.addEventListener('mouseenter', () => updateDetailCard(item));
         path.addEventListener('click', () => updateDetailCard(item));
 
         sectorsContainer.appendChild(path);
       });
 
-      // 24시간 눈금 라벨 드로잉
       const labelsContainer = document.getElementById('clockLabels');
       for (let i = 0; i < 24; i += 3) {
-        const deg = i * 15; // 24시간 = 360도이므로 1시간당 15도
+        const deg = i * 15;
         const rad = (deg * Math.PI) / 180;
         const tx = cx + (r - 20) * Math.cos(rad);
         const ty = cy + (r - 20) * Math.sin(rad);
@@ -667,7 +803,6 @@
         textNode.setAttribute('text-anchor', 'middle');
         textNode.setAttribute('alignment-baseline', 'middle');
         
-        // 회전 변환 적용하여 숫자 방향성 교정
         textNode.setAttribute('transform', `rotate(90 ${tx} ${ty})`);
         textNode.textContent = `${i}시`;
         
@@ -693,17 +828,15 @@
       responseEl.classList.remove('hidden');
       responseEl.innerHTML = `<span class="animate-pulse">Gemini 가 지혜로운 하루 첨삭을 준비 중입니다...</span>`;
 
-      // API Key가 설정되지 않았을 경우 (콘솔 오류를 방지하기 위해 로컬 AI Mock 데이터 활성화)
       if (!apiKey || apiKey === "") {
         setTimeout(() => {
           const randomIndex = Math.floor(Math.random() * MOCK_ADVICES.length);
           responseEl.textContent = `[Local AI Assistant] : ${MOCK_ADVICES[randomIndex]}`;
-          inputEl.value = ""; // 입력 필드 클리어
+          inputEl.value = "";
         }, 800);
         return;
       }
 
-      // 전체 일정 컨텍스트 구성
       const scheduleContext = SCHEDULE_ITEMS.map(i => `[${i.start}~${i.end}] ${i.title}: ${i.desc}`).join('\n');
       const systemInstruction = `너는 아주 섬세하고 센스 넘치는 라이프 코치이자 유쾌한 친구야. 사용자의 24시간 일정표 데이터를 바탕으로 질문에 알맞게 조언을 주어야 해. '좀비모드', '점심 나이슷ㅋㅋ', '퇴근 나이슷ㅋㅋ' 같은 개성 있는 워딩을 살려 유머러스하고 찰지게 첨삭해줘. 대답은 한국어로 부드럽고 다정하게 하되 타자기 같은 진중함과 위트를 섞어줘.`;
 
@@ -718,7 +851,6 @@
         }
       };
 
-      // Exponential Backoff API 요청 구현
       let delay = 1000;
       for (let attempt = 1; attempt <= 5; attempt++) {
         try {
@@ -734,7 +866,7 @@
           const replyText = result.candidates?.[0]?.content?.parts?.[0]?.text || "아쉽게도 첨삭을 가져오지 못했어요. 다시 시도해주세요.";
           
           responseEl.textContent = replyText;
-          inputEl.value = ""; // 입력 필드 클리어
+          inputEl.value = "";
           return; 
         } catch (error) {
           if (attempt === 5) {
@@ -746,7 +878,6 @@
         }
       }
     }
-
 
     // 5. 스크롤 인터랙션 감지
     function setupScrollAnimations() {
@@ -765,17 +896,14 @@
       });
     }
 
-
     // 6. 히든 글리치 트리거 및 모달 창 유동
     function triggerGlitchSequence() {
       const noise = document.getElementById('noiseOverlay');
       document.body.classList.add('noise-active');
 
-      // 노이즈 깜빡임 사운드 시각화 효과
       setTimeout(() => {
         document.body.classList.remove('noise-active');
         
-        // 에러 모달 띄우기
         const overlay = document.getElementById('errorOverlay');
         const box = document.getElementById('errorModalBox');
         overlay.classList.remove('hidden');
@@ -795,12 +923,10 @@
       const ending = document.getElementById('endingScreen');
       const endingText = document.getElementById('endingText');
 
-      // 에러 모달 축소 및 제거
       box.classList.add('scale-95', 'opacity-0');
       setTimeout(() => {
         overlay.classList.add('hidden');
         
-        // 메인 화면을 부드럽게 지우고 엔딩 화면 표출
         main.classList.remove('opacity-100');
         main.classList.add('opacity-0');
         footer.classList.add('hidden');
@@ -813,7 +939,6 @@
             ending.classList.remove('opacity-0');
             ending.classList.add('opacity-100');
             
-            // "Who's next?" 글자 부드럽게 강조
             setTimeout(() => {
               endingText.classList.remove('opacity-0', 'translate-y-4');
               endingText.classList.add('opacity-100', 'translate-y-0', 'glitch-text');
@@ -825,7 +950,6 @@
 
     // 초기화 리셋
     function resetToBeginning() {
-      // 입력값 클리어
       document.getElementById('answer1').value = '';
       document.getElementById('answer2').value = '';
       document.getElementById('answer3').value = '';
