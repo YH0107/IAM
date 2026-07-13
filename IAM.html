@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Who I Am - Interactive Portfolio</title>
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts for Courier/Typewriter feel and Korean Sans-serif -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Nanum+Myeongjo:wght@400;700;800&family=Song+Myung&display=swap" rel="stylesheet">
+  
+  <style>
+    /* 타자기 스타일 폰트 및 감성적 명조체 조합 */
+    body {
+      font-family: 'Courier Prime', 'Song Myung', 'Nanum Myeongjo', Courier, monospace, serif;
+      background-color: #F5EFEB; /* 따뜻한 베이지 배경 */
+      color: #3D3A37; /* 다크 차콜 글씨색 */
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* 커스텀 노이즈 효과 */
+    .noise-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: opacity 0.15s ease;
+    }
+
+    .noise-active .noise-overlay {
+      opacity: 1;
+      background-image: repeating-radial-gradient(circle at 50% 50%, #fff 0%, #000 50px);
+      animation: noise-anim 0.2s infinite;
+    }
+
+    @keyframes noise-anim {
+      0% { transform: translate(0, 0) scale(1); filter: contrast(150%) brightness(120%); }
+      50% { transform: translate(-2px, 3px) scale(1.05); filter: contrast(200%) brightness(80%); }
+      100% { transform: translate(3px, -1px) scale(0.98); filter: contrast(130%) brightness(140%); }
+    }
+
+    /* 커스텀 노이즈 글리치 폰트 효과 */
+    .glitch-text {
+      text-shadow: 2px 2px #3bc0c0, -2px -2px #ff4b5c;
+    }
+
+    /* 둥글둥글하고 세련된 보색 포인트 인터랙션 */
+    .interactive-btn {
+      background-color: #3D3A37;
+      color: #F5EFEB;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .interactive-btn:hover {
+      background-color: #388087; /* 보색 계열의 어둡지 않은 차분한 테일 민트 블루 */
+      color: #F6F6F6;
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 24px rgba(56, 128, 135, 0.25);
+    }
+
+    .interactive-btn:active {
+      transform: translateY(1px);
+    }
+
+    /* 아코디언 애니메이션 */
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
+    }
+
+    .accordion-item.active .accordion-content {
+      max-height: 150px; /* 적당한 수치 */
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    /* 부드러운 순차 등장 애니메이션 */
+    .fade-in-section {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .fade-in-section.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 스케줄 휠 오버 시 강조 효과 */
+    .schedule-sector {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+    
+    .schedule-sector:hover {
+      fill-opacity: 0.85;
+      stroke: #388087;
+      stroke-width: 4px;
+      filter: drop-shadow(0px 8px 16px rgba(56, 128, 135, 0.3));
+    }
+
+    /* 커스텀 스크롤바 */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F5EFEB;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #C4B3A5;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #388087;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased">
+
+  <!-- 노이즈 효과용 오버레이 -->
+  <div class="noise-overlay" id="noiseOverlay"></div>
+
+  <!-- 1. 로그인 퀴즈 화면 -->
+  <section id="loginScreen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F5EFEB] p-6 transition-all duration-1000 ease-in-out">
+    <div class="max-w-md w-full bg-[#EFE7E1] rounded-[2.5rem] p-8 md:p-10 shadow-xl border border-[#D9CFC7] text-center transform transition-transform duration-700">
+      <div class="mb-8">
+        <div class="w-16 h-16 bg-[#388087] text-[#F5EFEB] rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-md">
+          ?
+        </div>
+        <h1 class="text-2xl font-bold tracking-tight text-[#3D3A37] mb-2 font-serif">IDENTITY VERIFICATION</h1>
+        <p class="text-sm text-gray-500 font-sans">질문에 정확히 답해야 내부로 진입할 수 있습니다.</p>
+      </div>
+
+      <!-- 퀴즈 리스트 -->
+      <div class="space-y-6 text-left">
+        <!-- 질문 1 -->
+        <div class="space-y-1">
+          <label class="block text-sm font-semibold text-gray-700 font-serif">Q1. 가장 좋아하는 음식은?</label>
+          <input type="text" id="answer1" placeholder="답을 입력하세요" class="w-full px-4 py-3 bg-[#F5EFEB] border border-[#D2C5B9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#388087] focus:border-transparent transition text-base placeholder-gray-400">
+        </div>
+
+        <!-- 질문 2 -->
+        <div class="space-y-1">
+          <label class="block text-sm font-semibold text-gray-700 font-serif">Q2. 가장 좋아하는 취미는?</label>
+          <input type="text" id="answer2" placeholder="답을 입력하세요" class="w-full px-4 py-3 bg-[#F5EFEB] border border-[#D2C5B9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#388087] focus:border-transparent transition text-base placeholder-gray-400">
+        </div>
+
+        <!-- 질문 3 -->
+        <div class="space-y-1">
+          <label class="block text-sm font-semibold text-gray-700 font-serif">Q3. 사람인가요?</label>
+          <input type="text" id="answer3" placeholder="답을 입력하세요" class="w-full px-4 py-3 bg-[#F5EFEB] border border-[#D2C5B9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#388087] focus:border-transparent transition text-base placeholder-gray-400">
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <button onclick="checkQuizAnswers()" class="w-full py-4 rounded-2xl font-bold interactive-btn text-lg tracking-wider font-serif">
+          SUBMIT & ENTER
+        </button>
+        <p id="errorMessage" class="text-sm text-red-500 mt-3 hidden font-sans">답변이 올바르지 않습니다. 다시 생각해보세요!</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 2. 메인 콘텐츠 (로그인 성공 시 노출) -->
+  <main id="mainContent" class="hidden opacity-0 transition-opacity duration-1000 flex-1 w-full max-w-5xl mx-auto px-4 md:px-8 py-12 space-y-32">
+    
+    <!-- 첫 화면 인트로 헤더 -->
+    <header class="text-center py-12 md:py-20 fade-in-section">
+      <p class="text-xs uppercase tracking-[0.3em] text-[#388087] font-semibold mb-3">Front-End Developer Portfolio</p>
+      <h1 class="text-4xl md:text-6xl font-bold font-serif text-[#3D3A37] tracking-tight mb-6">
+        The Archive of Mine
+      </h1>
+      <div class="w-24 h-1 bg-[#388087] mx-auto rounded-full"></div>
+      <p class="mt-6 text-sm md:text-base max-w-md mx-auto text-gray-600 leading-relaxed font-sans">
+        저를 설명하기 위해 손수 빚어낸 순수 웹 아카이브입니다. 아래로 스크롤하여 진솔한 발자취와 일상을 살펴보세요.
+      </p>
+    </header>
+
+
+    <!-- 취미 순위 섹션 -->
+    <section class="fade-in-section space-y-8">
+      <div class="text-center">
+        <h2 class="text-3xl font-bold font-serif text-[#3D3A37] inline-block relative px-4">
+          HOBBY RANKING
+          <span class="absolute bottom-0 left-0 w-full h-[6px] bg-[#388087] opacity-20 -z-10"></span>
+        </h2>
+        <p class="text-xs text-gray-500 mt-2">버튼을 클릭하면 각 취미의 깊은 사연을 들여다볼 수 있습니다.</p>
+      </div>
+
+      <!-- 아코디언 컨테이너 -->
+      <div class="max-w-2xl mx-auto space-y-4">
+        
+        <!-- 취미 1 -->
+        <div class="accordion-item bg-[#EFE7E1] border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+          <button onclick="toggleAccordion(0)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] transition-colors">
+            <span class="font-serif font-bold text-lg text-[#3D3A37]">1. 노래 (Vocal)</span>
+            <span class="accordion-icon w-8 h-8 rounded-full bg-[#388087] text-[#F5EFEB] flex items-center justify-center text-xl transition-transform duration-300">
+              +
+            </span>
+          </button>
+          <div class="accordion-content px-6 bg-[#F8F3EF]/60">
+            <p class="text-sm md:text-base leading-relaxed text-gray-600 font-sans">
+              밴드 동아리 보컬 및 기타를 합니다. 장르를 크게 가리지 않고 좋아하는 편입니다.
+            </p>
+          </div>
+        </div>
+
+        <!-- 취미 2 -->
+        <div class="accordion-item bg-[#EFE7E1] border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+          <button onclick="toggleAccordion(1)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] transition-colors">
+            <span class="font-serif font-bold text-lg text-[#3D3A37]">2. 게임 (Gaming)</span>
+            <span class="accordion-icon w-8 h-8 rounded-full bg-[#388087] text-[#F5EFEB] flex items-center justify-center text-xl transition-transform duration-300">
+              +
+            </span>
+          </button>
+          <div class="accordion-content px-6 bg-[#F8F3EF]/60">
+            <p class="text-sm md:text-base leading-relaxed text-gray-600 font-sans">
+              롤, 배그, 로스트아크 등 장르 가리지 않고 다양한 게임을 해보았으며, 롤 시즌 4 다이아 출신, 오버워치 시즌 1 61점 출신입니다. 단, 에이징 커브가 왔습니다.
+            </p>
+          </div>
+        </div>
+
+        <!-- 취미 3 -->
+        <div class="accordion-item bg-[#EFE7E1] border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+          <button onclick="toggleAccordion(2)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] transition-colors">
+            <span class="font-serif font-bold text-lg text-[#3D3A37]">3. 책읽기 & 글쓰기 (Read & Write)</span>
+            <span class="accordion-icon w-8 h-8 rounded-full bg-[#388087] text-[#F5EFEB] flex items-center justify-center text-xl transition-transform duration-300">
+              +
+            </span>
+          </button>
+          <div class="accordion-content px-6 bg-[#F8F3EF]/60">
+            <p class="text-sm md:text-base leading-relaxed text-gray-600 font-sans">
+              생각을 정제하여 활자로 새겨넣는 작업을 좋아합니다. 매일 마주하는 감정은 많고, 영감...? 같은건 없지만 매일 꾸준하게 스스로의 감정을 활자로 관리하는 편입니다.
+            </p>
+          </div>
+        </div>
+
+        <!-- 취미 4 -->
+        <div class="accordion-item bg-[#EFE7E1] border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+          <button onclick="toggleAccordion(3)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] transition-colors">
+            <span class="font-serif font-bold text-lg text-[#3D3A37]">4. 기타 연습 (Guitar Practice)</span>
+            <span class="accordion-icon w-8 h-8 rounded-full bg-[#388087] text-[#F5EFEB] flex items-center justify-center text-xl transition-transform duration-300">
+              +
+            </span>
+          </button>
+          <div class="accordion-content px-6 bg-[#F8F3EF]/60">
+            <p class="text-sm md:text-base leading-relaxed text-gray-600 font-sans">
+              벽에 막힐때도 많지만, 점점 느는 느낌이 쾌감을 줍니다. 도파민 중독자로써는 참을 수 없는 유혹입니다.
+            </p>
+          </div>
+        </div>
+
+        <!-- 취미 5 -->
+        <div class="accordion-item bg-[#EFE7E1] border border-[#D9CFC7] rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+          <button onclick="toggleAccordion(4)" class="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none hover:bg-[#E8DDD5] transition-colors">
+            <span class="font-serif font-bold text-lg text-[#3D3A37]">5. 후배들 놀리기 (Friendly Teasing)</span>
+            <span class="accordion-icon w-8 h-8 rounded-full bg-[#388087] text-[#F5EFEB] flex items-center justify-center text-xl transition-transform duration-300">
+              +
+            </span>
+          </button>
+          <div class="accordion-content px-6 bg-[#F8F3EF]/60">
+            <p class="text-sm md:text-base leading-relaxed text-gray-600 font-sans">
+              재밌습니다.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- 시간표 섹션 -->
+    <section class="fade-in-section space-y-12">
+      <div class="text-center">
+        <h2 class="text-3xl font-bold font-serif text-[#3D3A37] inline-block relative px-4">
+          DAILY SCHEDULE WHEEL
+          <span class="absolute bottom-0 left-0 w-full h-[6px] bg-[#388087] opacity-20 -z-10"></span>
+        </h2>
+        <p class="text-xs text-gray-500 mt-2">마우스를 올리거나 터치하면 시간대별 활동 내역이 입체적으로 하이라이트됩니다.</p>
+      </div>
+
+      <!-- 원형 시계 영역 -->
+      <div class="flex flex-col lg:flex-row items-center justify-center gap-12 bg-[#EFE7E1] p-6 md:p-10 rounded-[3rem] border border-[#D9CFC7] shadow-sm">
+        
+        <!-- 대형 SVG 시계 -->
+        <div class="relative w-full max-w-[400px] aspect-square flex items-center justify-center">
+          <svg id="clockSvg" viewBox="0 0 400 400" class="w-full h-full transform -rotate-90 select-none">
+            <!-- 시계 베이스 원 배경 -->
+            <circle cx="200" cy="200" r="180" fill="#FBF8F6" stroke="#D9CFC7" stroke-width="4"/>
+            <!-- 24시간 중심축 눈금 및 디테일 서클 -->
+            <circle cx="200" cy="200" r="130" fill="none" stroke="#E2D7CE" stroke-width="2" stroke-dasharray="5,5"/>
+            <circle cx="200" cy="200" r="6" fill="#3D3A37"/>
+            
+            <!-- JavaScript에서 동적으로 시간표 섹터를 렌더링합니다. -->
+            <g id="sectorsContainer"></g>
+
+            <!-- 텍스트 시간 레이블 배치 (바깥 둘레) -->
+            <g id="clockLabels" class="text-[9px] font-bold fill-gray-500 font-serif"></g>
+          </svg>
+        </div>
+
+        <!-- 실시간 세부 디테일 카드 -->
+        <div class="w-full lg:w-1/2 flex flex-col justify-between space-y-6">
+          <div class="bg-[#F5EFEB] p-6 rounded-3xl border border-[#D9CFC7] min-h-[180px] flex flex-col justify-center">
+            <div class="flex items-center space-x-3 mb-2">
+              <span id="detailBadge" class="px-3 py-1 bg-[#388087] text-[#F5EFEB] text-xs font-bold rounded-full font-serif">00:00 - 00:00</span>
+              <span id="detailTitle" class="text-lg font-bold font-serif text-[#3D3A37]">선택하거나 오버하세요</span>
+            </div>
+            <p id="detailDescription" class="text-sm text-gray-600 leading-relaxed font-sans">
+              시계의 부채꼴 영역에 마우스를 대면 해당하는 일정의 상세 정보가 여기에 표시됩니다.
+            </p>
+          </div>
+
+          <!-- LLM 스케줄 도우미 -->
+          <div class="bg-[#F5EFEB] p-6 rounded-3xl border border-[#D9CFC7] space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="text-sm font-bold font-serif text-[#3D3A37]">AI 일과 첨삭 어시스턴트</h4>
+              <span class="flex h-2 w-2 relative">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+            </div>
+            <p class="text-xs text-gray-500 leading-relaxed font-sans">
+              "좀비 모드를 줄이고 싶어", "더 효율적인 하루 조언해줘" 처럼 질문을 던져 하루 스케줄을 분석해보세요!
+            </p>
+            <div class="flex space-x-2">
+              <input type="text" id="aiInput" placeholder="일정에 대해 질문해 보세요..." class="flex-1 px-4 py-2 bg-[#EFE7E1] border border-[#D2C5B9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#388087] text-xs">
+              <button onclick="getScheduleAdvice()" class="px-4 py-2 text-xs font-bold interactive-btn rounded-2xl font-serif">
+                SEND
+              </button>
+            </div>
+            <!-- AI 답변 출력창 -->
+            <div id="aiResponse" class="hidden p-3 bg-[#EFE7E1] rounded-2xl text-xs text-gray-600 max-h-40 overflow-y-auto leading-relaxed border border-[#E2D7CE] font-sans">
+              <!-- 답변이 기입됩니다 -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- 개인적인 경험 및 이력 섹션 -->
+    <section class="fade-in-section space-y-12">
+      <div class="text-center">
+        <h2 class="text-3xl font-bold font-serif text-[#3D3A37] inline-block relative px-4">
+          PERSONAL ARCHIVE
+          <span class="absolute bottom-0 left-0 w-full h-[6px] bg-[#388087] opacity-20 -z-10"></span>
+        </h2>
+        <p class="text-xs text-gray-500 mt-2">인생의 크고 작은 사건들, 개성이 가득 찬 다채로운 궤적들입니다.</p>
+      </div>
+
+      <!-- 이력 카드 뷰 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- 카드 1 -->
+        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+          <div class="text-3xl mb-4">⏱️</div>
+          <h3 class="text-lg font-bold font-serif text-[#3D3A37] mb-2">부트캠프 2달</h3>
+          <p class="text-xs text-gray-500 leading-relaxed font-sans">
+            짧지만 치열했던 60일의 도전. 밤을 지새우며 로직을 짜고, 웹의 근간을 바닥부터 갈고 닦으며 프론트엔드 핵심 인프라를 이해하게 된 단단한 디딤돌이었습니다.
+          </p>
+        </div>
+
+        <!-- 카드 2 -->
+        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+          <div class="text-3xl mb-4">🎤</div>
+          <h3 class="text-lg font-bold font-serif text-[#3D3A37] mb-2">밴드 동아리 보컬</h3>
+          <p class="text-xs text-gray-500 leading-relaxed font-sans">
+            공명하는 드럼 소리 위로 제 목소리를 얹는 경험을 통해 무대 공포증을 극복하고, 수많은 부원과 협업하며 소통의 하모니가 지닌 찬란함을 배웠습니다.
+          </p>
+        </div>
+
+        <!-- 카드 3 -->
+        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+          <div class="text-3xl mb-4">💼</div>
+          <h3 class="text-lg font-bold font-serif text-[#3D3A37] mb-2">아르바이트 대장정</h3>
+          <p class="text-xs text-gray-500 leading-relaxed font-sans">
+            세상의 다양한 층위에서 몸을 부딪치며 축적한 노동과 대인 관계 노하우. 어떤 척박한 환경 속에서도 끈질기게 적응해내는 생존 본능을 내재했습니다.
+          </p>
+        </div>
+
+        <!-- 카드 4 -->
+        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+          <div class="text-3xl mb-4">💸</div>
+          <h3 class="text-lg font-bold font-serif text-[#3D3A37] mb-2">등골 브레이커 출신</h3>
+          <p class="text-xs text-gray-500 leading-relaxed font-sans">
+            한때는 부모님의 기대와 지원을 듬뿍 빌려 쓰며 방황하기도 했지만, 그 소중함을 깨달은 뒤로는 1인분의 몫을 우뚝 서며 확실하게 보은하고자 하는 원동력입니다.
+          </p>
+        </div>
+
+        <!-- 카드 5 -->
+        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+          <div class="text-3xl mb-4">✍️</div>
+          <h3 class="text-lg font-bold font-serif text-[#3D3A37] mb-2">SNS 글쓰기 100+</h3>
+          <p class="text-xs text-gray-500 leading-relaxed font-sans">
+            꾸준히 제 사유의 조각들을 정비하고 공유해온 결과물. 가벼운 배설성 낙서가 아닌 진중한 내러티브를 지닌 독립적 스토리 아카이브를 자부합니다. (ㅋㅋ)
+          </p>
+        </div>
+
+        <!-- 카드 6 -->
+        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+          <div class="text-3xl mb-4">🥗</div>
+          <h3 class="text-lg font-bold font-serif text-[#3D3A37] mb-2">성공적인 체중 감량</h3>
+          <p class="text-xs text-gray-500 leading-relaxed font-sans">
+            엄격한 식단 관리와 생활 습관의 교정. 저 자신과의 지루한 약속을 지켜내며 획득한 슬림해진 피지컬은 끈기만 있다면 무엇이든 바꿀 수 있다는 증거입니다.
+          </p>
+        </div>
+
+        <!-- 카드 7 -->
+        <div class="bg-[#EFE7E1] border border-[#D9CFC7] p-6 rounded-3xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 md:col-span-2 lg:col-span-3">
+          <div class="flex items-center space-x-4">
+            <span class="text-3xl">🎮</span>
+            <div>
+              <h3 class="text-lg font-bold font-serif text-[#3D3A37]">League of Legends 시즌 4 다이아몬드</h3>
+              <p class="text-xs text-gray-500 mt-1 leading-relaxed font-sans">
+                협곡의 가장 영예로운 꼭대기 문턱에 있었던 흔적. 수많은 변수들 속에서도 미니맵의 흐름을 빠르게 읽고, 순간의 기회를 기어코 포착해내는 고성능 멀티태스킹 뇌세포의 지표입니다.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 에러 히든 트리거 버튼 -->
+      <div class="flex justify-center pt-8">
+        <button onclick="triggerGlitchSequence()" class="w-14 h-14 rounded-full bg-[#E2D7CE] border-2 border-[#C4B3A5] hover:bg-[#388087] hover:text-[#F5EFEB] hover:border-transparent flex items-center justify-center text-2xl font-bold transition-all duration-300 shadow-sm focus:outline-none" title="Expand more">
+          +
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- 3. 최하단 에러 플로팅 창 (시스템 에러인 척 유도) -->
+  <section id="errorOverlay" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#F5EFEB] border-4 border-red-500 rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center transform scale-95 opacity-0 transition-all duration-300" id="errorModalBox">
+      <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-mono">
+        ⚠
+      </div>
+      <h3 class="text-xl font-bold font-serif text-[#3D3A37] mb-2">SYSTEM ERROR : 0x00A1F</h3>
+      <p class="text-sm text-gray-600 mb-6 font-sans leading-relaxed">
+        치명적인 코어 에러가 검출되었습니다. 데이터를 복구하고 메인 스페이스를 닫은 후 다음 단계로 이행해야 합니다.
+      </p>
+      <button onclick="confirmErrorAndProceed()" class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-2xl text-sm transition-all shadow-md active:scale-95 font-serif">
+        확인 (CORRECT)
+      </button>
+    </div>
+  </section>
+
+
+  <!-- 4. Who's Next 엔딩 화면 -->
+  <section id="endingScreen" class="fixed inset-0 z-40 hidden bg-[#F5EFEB] flex flex-col justify-between items-center p-8 transition-all duration-1000 opacity-0">
+    <!-- 상단 여백 및 탑 라벨 -->
+    <div class="pt-8 text-center">
+      <p class="text-xs uppercase tracking-[0.4em] text-[#388087] font-semibold">THE END OF CHAPTER</p>
+    </div>
+
+    <!-- 화면의 물리적/기하학적 정중앙 영역 -->
+    <div class="flex-1 flex flex-col justify-center items-center my-auto max-w-lg">
+      <h2 id="endingText" class="text-4xl md:text-6xl font-bold font-serif tracking-widest text-[#3D3A37] select-none leading-tight opacity-0 transform translate-y-4 transition-all duration-1000 ease-out text-center">
+        Who's next?
+      </h2>
+      <div class="w-16 h-[2px] bg-[#3D3A37]/30 my-6"></div>
+      <p class="text-xs text-gray-500 font-sans tracking-wide leading-relaxed text-center">
+        이제 당신의 이야기를 들려주실 차례입니다.<br>
+        접속해 주셔서 대단히 감사합니다.
+      </p>
+    </div>
+
+    <!-- 하단 재시작 버튼 -->
+    <div class="pb-8 text-center">
+      <button onclick="resetToBeginning()" class="px-6 py-3 border border-[#3D3A37] rounded-full text-xs font-serif uppercase tracking-wider text-[#3D3A37] hover:bg-[#3D3A37] hover:text-[#F5EFEB] transition-all duration-300">
+        RESTART ARCHIVE
+      </button>
+    </div>
+  </section>
+
+
+  <!-- 푸터 (로그인 성공 시 아래 스티키하게 고정) -->
+  <footer id="mainFooter" class="hidden border-t border-[#D9CFC7] py-6 text-center text-xs text-gray-500 font-sans">
+    <p>© 2026 Developer Archive. Crafted with pure Vanilla HTML, CSS & JS.</p>
+  </footer>
+
+
+  <!-- JavaScript 제어 스크립트 -->
+  <script>
+    // 퀴즈 정답 사전 선언 (사용자 기입 답안과 검증)
+    const QUIZ_ANSWERS = {
+      q1: "알리오 올리오",
+      q2: "노래",
+      q3: "글쎄요"
+    };
+
+    // 시간표 데이터 셋업
+    // 시계 각도 계산을 위해 소수점 시간을 일반 시간 형태로 포맷
+    const SCHEDULE_ITEMS = [
+      { start: "05:30", end: "06:00", title: "부활", desc: "이른 아침의 눈을 뜨는 눈부신 희망", color: "#E0ECE4" },
+      { start: "06:00", end: "06:30", title: "아침 식사", desc: "생명 연장을 위한 가벼운 정량 섭취", color: "#F7D6C8" },
+      { start: "06:30", end: "07:20", title: "씻기 및 단장", desc: "말끔하게 정신 차리고 출근 매너 셋업", color: "#D3E0EA" },
+      { start: "07:20", end: "07:45", title: "출발 & 이동", desc: "셔틀을 향해 바쁘게 걷는 시간", color: "#C6E2E9" },
+      { start: "07:45", end: "09:00", title: "셔틀 탑승", desc: "차창 밖을 보며 잠깐 모자란 숙면 충전", color: "#A8DADC" },
+      { start: "09:00", end: "12:45", title: "좀비 모드 1단계", desc: "반복적인 로직 생산과 업무 루틴에 동화되는 시간", color: "#E5E5E5" },
+      { start: "12:45", end: "13:30", title: "점심 나이슷ㅋㅋ", desc: "드디어 꿀맛같은 보상, 배를 채우는 행복 수치 충족!", color: "#FBC4AB" },
+      { start: "13:30", end: "14:00", title: "부서 복귀", desc: "식후 가벼운 티타임 및 포만감 만끽", color: "#ECE4DB" },
+      { start: "14:00", end: "18:00", title: "좀비 모드 2단계", desc: "오후 피로와의 힘겨운 싸움, 무한 타이핑", color: "#D2D2D2" },
+      { start: "18:00", end: "19:00", title: "퇴근 나이슷ㅋㅋ", desc: "드디어 무거운 해방! 집 또는 다음 장소를 향한 잰걸음", color: "#FBC4AB" },
+      { start: "19:00", end: "20:30", title: "하단 도착 & 동코", desc: "목청 높여 노래 부르며 스트레스 완벽 해소(선택)", color: "#FFD166" },
+      { start: "20:30", end: "21:00", title: "집 도착 후 샤워", desc: "바깥 먼지 씻어내고 온전한 홈웨어 모드로 전환", color: "#D3E0EA" },
+      { start: "21:00", end: "23:00", title: "게임 시작", desc: "가장 순수하게 짜릿해지는 모험의 시간", color: "#A8DADC" },
+      { start: "23:00", end: "24:00", title: "취침 준비", desc: "오늘 하루를 가라앉히는 릴랙스 시간", color: "#C4C4C4" },
+      { start: "00:00", end: "05:30", title: "글 기재 & 취침", desc: "SNS 일기 발행 후 내일을 위해 영면", color: "#9E9E9E" }
+    ];
+
+    // API 키 부재 시 대체 작동할 똑똑하고 센스 넘치는 로컬 캐싱 대답 목록
+    const MOCK_ADVICES = [
+      "좀비 모드를 정복하려 하시는군요! 9시와 14시 좀비 모드 사이에 존재하는 '점심 나이슷ㅋㅋ' 타임을 적극 활용하여 고효율 포도당 수혈을 추천합니다. 커피는 필수!",
+      "저녁 19시에 예정된 동전노래방(선택)은 보컬 출신으로서의 성대를 세밀하게 조율하는 가치 있는 시간입니다. 과감히 선곡을 넓혀보는 것은 어떨까요?",
+      "새벽 00시 글 기재 및 일기 업로드 이후 사망(...) 스케줄이 인상적입니다. 깊고 평화로운 수면을 위해 일기 작성 후 10분 정도는 전자기기를 차단하는 정제된 수면 리추얼을 제안해 봅니다.",
+      "등골 브레이커에서 우뚝 선 1인분 개발자가 되신 만큼, 21시 게임 세션에서 롤 시즌 4 다이아의 찬란했던 피지컬을 가볍게 점검해 주시는 것도 내면의 효능감 향상에 매우 좋겠군요!",
+      "스케줄 자체의 밸런스가 매우 우수합니다. 퇴근 이후의 취미 유영과 자정 직전 창작글 배포 등 삶의 다채로운 장르를 멋지게 아우르고 계십니다. 하루의 리듬을 믿어보세요."
+    ];
+
+    // 페이지 진입 시 자동 입력 포커스
+    window.onload = function() {
+      document.getElementById('answer1').focus();
+      initInteractiveClock();
+      setupScrollAnimations();
+    };
+
+    // 1. 퀴즈 검증 로직
+    function checkQuizAnswers() {
+      const q1Val = document.getElementById('answer1').value.trim();
+      const q2Val = document.getElementById('answer2').value.trim();
+      const q3Val = document.getElementById('answer3').value.trim();
+
+      if (q1Val === QUIZ_ANSWERS.q1 && q2Val === QUIZ_ANSWERS.q2 && q3Val === QUIZ_ANSWERS.q3) {
+        // 성공 트랜지션
+        const loginScreen = document.getElementById('loginScreen');
+        const mainContent = document.getElementById('mainContent');
+        const mainFooter = document.getElementById('mainFooter');
+
+        loginScreen.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => {
+          loginScreen.classList.add('hidden');
+          mainContent.classList.remove('hidden');
+          mainFooter.classList.remove('hidden');
+          
+          // 강제 레이아웃 트리거 후 투명도 복원
+          setTimeout(() => {
+            mainContent.classList.add('opacity-100');
+            // 스크롤 탑 복원 및 순차 등장 감지 작동
+            window.scrollTo({ top: 0 });
+            triggerScrollVisible();
+          }, 50);
+        }, 1000);
+      } else {
+        // 에러 진동 혹은 피드백
+        const err = document.getElementById('errorMessage');
+        err.classList.remove('hidden');
+        err.classList.add('animate-bounce');
+        setTimeout(() => err.classList.remove('animate-bounce'), 1000);
+      }
+    }
+
+    // 2. 아코디언 로직
+    function toggleAccordion(activeIndex) {
+      const items = document.querySelectorAll('.accordion-item');
+      items.forEach((item, index) => {
+        const icon = item.querySelector('.accordion-icon');
+        if (index === activeIndex) {
+          item.classList.toggle('active');
+          if (item.classList.contains('active')) {
+            icon.textContent = '-';
+            icon.style.backgroundColor = '#388087';
+          } else {
+            icon.textContent = '+';
+            icon.style.backgroundColor = '#3D3A37';
+          }
+        } else {
+          item.classList.remove('active');
+          icon.textContent = '+';
+          icon.style.backgroundColor = '#3D3A37';
+        }
+      });
+    }
+
+    // 3. 24시간 원형 시계 드로잉 및 인터랙션 구축
+    function timeToDegrees(timeStr) {
+      const [hrs, mins] = timeStr.split(':').map(Number);
+      const totalMins = hrs * 60 + mins;
+      // 24시간 = 1440분 = 360도 => 1분당 0.25도
+      return totalMins * 0.25;
+    }
+
+    function initInteractiveClock() {
+      const sectorsContainer = document.getElementById('sectorsContainer');
+      const cx = 200;
+      const cy = 200;
+      const r = 160; // 섹터 반지름
+
+      SCHEDULE_ITEMS.forEach((item, idx) => {
+        const startDeg = timeToDegrees(item.start);
+        let endDeg = timeToDegrees(item.end);
+        
+        // 24시 자정 처리 보정
+        if (endDeg <= startDeg) {
+          endDeg += 360;
+        }
+
+        const startRad = (startDeg * Math.PI) / 180;
+        const endRad = (endDeg * Math.PI) / 180;
+
+        const x1 = cx + r * Math.cos(startRad);
+        const y1 = cy + r * Math.sin(startRad);
+        const x2 = cx + r * Math.cos(endRad);
+        const y2 = cy + r * Math.sin(endRad);
+
+        // 큰 호 플래그 판정 (각도가 180도보다 크면 1, 아니면 0)
+        const largeArcFlag = (endDeg - startDeg) > 180 ? 1 : 0;
+
+        // SVG 패스 생성
+        const pathData = `
+          M ${cx} ${cy}
+          L ${x1} ${y1}
+          A ${r} ${r} 0 ${largeArcFlag} 1 ${x2} ${y2}
+          Z
+        `;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathData);
+        path.setAttribute('fill', item.color);
+        path.setAttribute('stroke', '#D9CFC7');
+        path.setAttribute('stroke-width', '1');
+        path.setAttribute('class', 'schedule-sector');
+        path.style.transformOrigin = '200px 200px';
+
+        // 인터랙션 이벤트 바인딩
+        path.addEventListener('mouseenter', () => updateDetailCard(item));
+        path.addEventListener('click', () => updateDetailCard(item));
+
+        sectorsContainer.appendChild(path);
+      });
+
+      // 24시간 눈금 라벨 드로잉
+      const labelsContainer = document.getElementById('clockLabels');
+      for (let i = 0; i < 24; i += 3) {
+        const deg = i * 15; // 24시간 = 360도이므로 1시간당 15도
+        const rad = (deg * Math.PI) / 180;
+        const tx = cx + (r - 20) * Math.cos(rad);
+        const ty = cy + (r - 20) * Math.sin(rad);
+
+        const textNode = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        textNode.setAttribute('x', tx);
+        textNode.setAttribute('y', ty);
+        textNode.setAttribute('text-anchor', 'middle');
+        textNode.setAttribute('alignment-baseline', 'middle');
+        
+        // 회전 변환 적용하여 숫자 방향성 교정
+        textNode.setAttribute('transform', `rotate(90 ${tx} ${ty})`);
+        textNode.textContent = `${i}시`;
+        
+        labelsContainer.appendChild(textNode);
+      }
+    }
+
+    function updateDetailCard(item) {
+      document.getElementById('detailBadge').textContent = `${item.start} - ${item.end}`;
+      document.getElementById('detailTitle').textContent = item.title;
+      document.getElementById('detailDescription').textContent = item.desc;
+    }
+
+    // 4. Gemini API 연동 및 오프라인 폴백 지능형 처리 시스템
+    const apiKey = ""; 
+    async function getScheduleAdvice() {
+      const inputEl = document.getElementById('aiInput');
+      const responseEl = document.getElementById('aiResponse');
+      const query = inputEl.value.trim();
+      
+      if (!query) return;
+
+      responseEl.classList.remove('hidden');
+      responseEl.innerHTML = `<span class="animate-pulse">Gemini 가 지혜로운 하루 첨삭을 준비 중입니다...</span>`;
+
+      // API Key가 설정되지 않았을 경우 (콘솔 오류를 방지하기 위해 로컬 AI Mock 데이터 활성화)
+      if (!apiKey || apiKey === "") {
+        setTimeout(() => {
+          const randomIndex = Math.floor(Math.random() * MOCK_ADVICES.length);
+          responseEl.textContent = `[Local AI Assistant] : ${MOCK_ADVICES[randomIndex]}`;
+          inputEl.value = ""; // 입력 필드 클리어
+        }, 800);
+        return;
+      }
+
+      // 전체 일정 컨텍스트 구성
+      const scheduleContext = SCHEDULE_ITEMS.map(i => `[${i.start}~${i.end}] ${i.title}: ${i.desc}`).join('\n');
+      const systemInstruction = `너는 아주 섬세하고 센스 넘치는 라이프 코치이자 유쾌한 친구야. 사용자의 24시간 일정표 데이터를 바탕으로 질문에 알맞게 조언을 주어야 해. '좀비모드', '점심 나이슷ㅋㅋ', '퇴근 나이슷ㅋㅋ' 같은 개성 있는 워딩을 살려 유머러스하고 찰지게 첨삭해줘. 대답은 한국어로 부드럽고 다정하게 하되 타자기 같은 진중함과 위트를 섞어줘.`;
+
+      const payload = {
+        contents: [{
+          parts: [{
+            text: `내 오늘 하루 스케줄이야:\n${scheduleContext}\n\n질문: ${query}`
+          }]
+        }],
+        systemInstruction: {
+          parts: [{ text: systemInstruction }]
+        }
+      };
+
+      // Exponential Backoff API 요청 구현
+      let delay = 1000;
+      for (let attempt = 1; attempt <= 5; attempt++) {
+        try {
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          
+          const result = await response.json();
+          const replyText = result.candidates?.[0]?.content?.parts?.[0]?.text || "아쉽게도 첨삭을 가져오지 못했어요. 다시 시도해주세요.";
+          
+          responseEl.textContent = replyText;
+          inputEl.value = ""; // 입력 필드 클리어
+          return; 
+        } catch (error) {
+          if (attempt === 5) {
+            responseEl.textContent = "서버 통신에 오류가 발생했습니다. 잠시 후 다시 조언을 요청해주세요.";
+          } else {
+            await new Promise(resolve => setTimeout(resolve, delay));
+            delay *= 2; 
+          }
+        }
+      }
+    }
+
+
+    // 5. 스크롤 인터랙션 감지
+    function setupScrollAnimations() {
+      window.addEventListener('scroll', triggerScrollVisible);
+    }
+
+    function triggerScrollVisible() {
+      const sections = document.querySelectorAll('.fade-in-section');
+      const triggerBottom = window.innerHeight * 0.85;
+
+      sections.forEach(section => {
+        const sectionTop = section.getBoundingClientRect().top;
+        if (sectionTop < triggerBottom) {
+          section.classList.add('is-visible');
+        }
+      });
+    }
+
+
+    // 6. 히든 글리치 트리거 및 모달 창 유동
+    function triggerGlitchSequence() {
+      const noise = document.getElementById('noiseOverlay');
+      document.body.classList.add('noise-active');
+
+      // 노이즈 깜빡임 사운드 시각화 효과
+      setTimeout(() => {
+        document.body.classList.remove('noise-active');
+        
+        // 에러 모달 띄우기
+        const overlay = document.getElementById('errorOverlay');
+        const box = document.getElementById('errorModalBox');
+        overlay.classList.remove('hidden');
+        
+        setTimeout(() => {
+          box.classList.remove('scale-95', 'opacity-0');
+          box.classList.add('scale-100', 'opacity-100');
+        }, 50);
+      }, 1200); 
+    }
+
+    function confirmErrorAndProceed() {
+      const overlay = document.getElementById('errorOverlay');
+      const box = document.getElementById('errorModalBox');
+      const main = document.getElementById('mainContent');
+      const footer = document.getElementById('mainFooter');
+      const ending = document.getElementById('endingScreen');
+      const endingText = document.getElementById('endingText');
+
+      // 에러 모달 축소 및 제거
+      box.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        
+        // 메인 화면을 부드럽게 지우고 엔딩 화면 표출
+        main.classList.remove('opacity-100');
+        main.classList.add('opacity-0');
+        footer.classList.add('hidden');
+        
+        setTimeout(() => {
+          main.classList.add('hidden');
+          ending.classList.remove('hidden');
+          
+          setTimeout(() => {
+            ending.classList.remove('opacity-0');
+            ending.classList.add('opacity-100');
+            
+            // "Who's next?" 글자 부드럽게 강조
+            setTimeout(() => {
+              endingText.classList.remove('opacity-0', 'translate-y-4');
+              endingText.classList.add('opacity-100', 'translate-y-0', 'glitch-text');
+            }, 600);
+          }, 50);
+        }, 1000);
+      }, 300);
+    }
+
+    // 초기화 리셋
+    function resetToBeginning() {
+      // 입력값 클리어
+      document.getElementById('answer1').value = '';
+      document.getElementById('answer2').value = '';
+      document.getElementById('answer3').value = '';
+      document.getElementById('errorMessage').classList.add('hidden');
+
+      const loginScreen = document.getElementById('loginScreen');
+      const ending = document.getElementById('endingScreen');
+      const endingText = document.getElementById('endingText');
+
+      ending.classList.add('opacity-0');
+      endingText.classList.add('opacity-0', 'translate-y-4');
+      endingText.classList.remove('glitch-text');
+
+      setTimeout(() => {
+        ending.classList.add('hidden');
+        loginScreen.classList.remove('hidden', 'opacity-0', 'scale-95');
+        document.getElementById('answer1').focus();
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
