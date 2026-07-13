@@ -6,6 +6,12 @@
   <title>Who I Am - Interactive Portfolio</title>
   <!-- Tailwind CSS Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 클래스 기반 다크모드 활성화를 위한 Tailwind 설정 -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    }
+  </script>
   <!-- Google Fonts for Courier/Typewriter feel and Korean Sans-serif -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -166,8 +172,8 @@
     </button>
   </div>
 
-  <!-- 1. 로그인 퀴즈 화면 -->
-  <section id="loginScreen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F5EFEB] dark:bg-[#23211F] p-4 sm:p-6 transition-all duration-1000 ease-in-out">
+  <!-- 1. 로그인 퀴즈 화면 (배경 일체형 다크모드 지원 클래스 추가) -->
+  <section id="loginScreen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F5EFEB] dark-body-color p-4 sm:p-6 transition-all duration-1000 ease-in-out transition-colors duration-700">
     <div class="max-w-md w-full bg-[#EFE7E1] dark-card rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 shadow-xl border border-[#D9CFC7] text-center transform transition-transform duration-700 transition-colors duration-700 relative">
       
       <!-- 스포일러 쪽지 단추 (우측 상단 반응형 플로팅) -->
@@ -429,7 +435,7 @@
           <div class="text-2xl sm:text-3xl mb-3 sm:mb-4">⏱️</div>
           <h3 class="text-base sm:text-lg font-bold font-serif text-[#3D3A37] dark-text mb-2">부트캠프 2달</h3>
           <p class="text-xs text-gray-500 dark-subtext leading-relaxed font-sans">
-            짧지만 치열했던 60일의 도전. 밤을 지새우며 로직을 짜고, 웹의 근간을 바닥부터 갈고 닦으며 프론트엔드 핵심 인프라를 이해하게 된 단단한 디딤돌이었습니다.
+            짧지만 치열했던 60일의 도전. 로직을 짜고, 코딩의 근간을 바닥부터 갈고 닦으며 프론트엔드, 백엔드를 이해하게 된 단단한 디딤돌이었습니다.
           </p>
         </div>
 
@@ -447,7 +453,7 @@
           <div class="text-2xl sm:text-3xl mb-3 sm:mb-4">💼</div>
           <h3 class="text-base sm:text-lg font-bold font-serif text-[#3D3A37] dark-text mb-2">아르바이트 대장정</h3>
           <p class="text-xs text-gray-500 dark-subtext leading-relaxed font-sans">
-            세상의 다양한 층위에서 몸을 부딪치며 축적 한 노동과 대인 관계 노하우. 어떤 척박한 환경 속에서도 끈질기게 적응해내는 생존 본능을 내재했습니다.
+            세상에 몸을 부딪치며 축적 한 노동과 대인 관계 노하우. 어떤 척박한 환경 속에서도 끈질기게 적응해내는 생존 본능을 내재했습니다.
           </p>
         </div>
 
@@ -465,7 +471,7 @@
           <div class="text-2xl sm:text-3xl mb-3 sm:mb-4">✍️</div>
           <h3 class="text-base sm:text-lg font-bold font-serif text-[#3D3A37] dark-text mb-2">SNS 글쓰기 100+</h3>
           <p class="text-xs text-gray-500 dark-subtext leading-relaxed font-sans">
-            꾸준히 제 사유의 조각들을 정비하고 공유해온 결과물. 가벼운 배설성 낙서가 아닌 진중한 내러티브를 지닌 독립적 스토리 아카이브를 자부합니다. (ㅋㅋ)
+            꾸준히 제 사유의 조각들을 정비하고 공유해온 결과물. 가벼운 배설성 낙서가 아닌 진중한 내러티브를 지닌 독립적 스토리 어쩌구저쩌구... (ㅋㅋ)
           </p>
         </div>
 
@@ -474,7 +480,7 @@
           <div class="text-2xl sm:text-3xl mb-3 sm:mb-4">🥗</div>
           <h3 class="text-base sm:text-lg font-bold font-serif text-[#3D3A37] dark-text mb-2">성공적인 체중 감량</h3>
           <p class="text-xs text-gray-500 dark-subtext leading-relaxed font-sans">
-            엄격한 식단 관리와 생활 습관의 교정. 저 자신과의 지루한 약속을 지켜내며 획득한 슬림해진 피지컬은 끈기만 있다면 무엇이든 바꿀 수 있다는 증거입니다.
+            엄격한 식단 관리와 생활 습관의 교정. 그냥 기분이 좋아집니다. 갈길이 멉니다.
           </p>
         </div>
 
@@ -483,7 +489,7 @@
           <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
             <span class="text-2xl sm:text-3xl">🎮</span>
             <div>
-              <h3 class="text-base sm:text-lg font-bold font-serif text-[#3D3A37]">League of Legends 시즌 4 다이아몬드</h3>
+              <h3 class="text-base sm:text-lg font-bold font-serif text-[#3D3A37] dark-text">League of Legends 시즌 4 다이아몬드</h3>
               <p class="text-xs text-gray-500 dark-subtext mt-1 leading-relaxed font-sans transition-colors duration-700">
                 협곡의 가장 영예로운 꼭대기 문턱에 있었던 흔적. 수많은 변수들 속에서도 미니맵의 흐름을 빠르게 읽고, 순간의 기회를 기어코 포착해내는 고성능 멀티태스킹 뇌세포의 지표입니다.
               </p>
@@ -521,8 +527,8 @@
   </section>
 
 
-  <!-- 4. Who's Next 엔딩 화면 (스크롤이 가능하도록 overflow-y-auto 지정) -->
-  <section id="endingScreen" class="fixed inset-0 z-40 hidden bg-[#F5EFEB] dark:bg-[#23211F] flex flex-col items-center p-6 sm:p-8 transition-all duration-1000 opacity-0 overflow-y-auto">
+  <!-- 4. Who's Next 엔딩 화면 (다크모드 지원 클래스 dark-body-color 및 transition-colors duration-700 추가) -->
+  <section id="endingScreen" class="fixed inset-0 z-40 hidden bg-[#F5EFEB] dark-body-color flex flex-col items-center p-6 sm:p-8 transition-all duration-1000 opacity-0 overflow-y-auto transition-colors duration-700">
     <!-- 상단 여백 및 탑 라벨 -->
     <div class="pt-4 sm:pt-8 text-center flex-shrink-0">
       <p class="text-[10px] sm:text-xs uppercase tracking-[0.4em] text-[#388087] font-semibold">THE END OF CHAPTER</p>
@@ -533,39 +539,39 @@
       <h2 id="endingText" class="text-3xl sm:text-4xl md:text-6xl font-bold font-serif tracking-widest text-[#3D3A37] dark-text select-none leading-tight opacity-0 transform translate-y-4 transition-all duration-1000 ease-out text-center">
         Who's next?
       </h2>
-      <div class="w-12 sm:w-16 h-[2px] bg-[#3D3A37]/30 dark:bg-[#EFE7E1]/30 my-5 sm:my-6"></div>
-      <p class="text-[11px] sm:text-xs text-gray-500 dark-subtext font-sans tracking-wide leading-relaxed text-center">
+      <div class="w-12 sm:w-16 h-[2px] bg-[#3D3A37]/30 dark:bg-[#EFE7E1]/30 my-5 sm:my-6 transition-colors duration-700"></div>
+      <p class="text-[11px] sm:text-xs text-gray-500 dark-subtext font-sans tracking-wide leading-relaxed text-center transition-colors duration-700">
         이제 당신의 이야기를 들려주실 차례입니다.<br>
         접속해 주셔서 대단히 감사합니다.
       </p>
 
       <!-- 💬 방명록(댓글 시스템) 추가 영역 -->
       <div class="w-full mt-10 bg-[#EFE7E1] dark-card border border-[#D9CFC7] rounded-3xl p-5 sm:p-6 space-y-4 transition-colors duration-700 shadow-sm">
-        <h3 class="text-sm sm:text-base font-bold font-serif text-[#3D3A37] dark-text flex items-center space-x-2">
+        <h3 class="text-sm sm:text-base font-bold font-serif text-[#3D3A37] dark-text flex items-center space-x-2 transition-colors duration-700">
           <span>✍</span> <span>방명록 남기기 (Guestbook)</span>
         </h3>
         
         <!-- 입력 폼 -->
         <div class="space-y-3">
           <div class="grid grid-cols-3 gap-2">
-            <input type="text" id="commentAuthor" placeholder="닉네임" class="col-span-1 px-3 py-2 text-sm bg-[#F5EFEB] dark-input border border-[#D2C5B9] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#388087] placeholder-gray-400 font-sans transition-all">
-            <input type="text" id="commentText" placeholder="따뜻한 한마디를 남겨주세요." class="col-span-2 px-3 py-2 text-sm bg-[#F5EFEB] dark-input border border-[#D2C5B9] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#388087] placeholder-gray-400 font-sans transition-all">
+            <input type="text" id="commentAuthor" placeholder="닉네임" class="col-span-1 px-3 py-2 text-sm bg-[#F5EFEB] dark-input border border-[#D2C5B9] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#388087] placeholder-gray-400 font-sans transition-colors duration-700">
+            <input type="text" id="commentText" placeholder="따뜻한 한마디를 남겨주세요." class="col-span-2 px-3 py-2 text-sm bg-[#F5EFEB] dark-input border border-[#D2C5B9] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#388087] placeholder-gray-400 font-sans transition-colors duration-700">
           </div>
           <button onclick="submitNewComment()" class="w-full py-2.5 rounded-xl font-bold text-xs interactive-btn font-serif tracking-wider">
             COMMENT WRITE
           </button>
         </div>
 
-        <div class="w-full h-[1px] bg-[#D9CFC7] dark:bg-[#EFE7E1]/20 my-2"></div>
+        <div class="w-full h-[1px] bg-[#D9CFC7] dark:bg-[#EFE7E1]/20 my-2 transition-colors duration-700"></div>
 
-        <!-- 댓글 목록 리스트 (스크롤 가능하도록 맥스 높이 지정) -->
+        <!-- 댓글 목록 리스트 -->
         <div id="commentsContainer" class="space-y-3 max-h-[160px] overflow-y-auto pr-1">
           <!-- 스크립트를 통해 동적으로 렌더링됩니다 -->
         </div>
       </div>
     </div>
 
-    <!-- 하단 재시작 버튼 -->
+    <!-- 하단 재시작 버튼 (Tailwind class-based dark: 수식어 및 테마 반영) -->
     <div class="pb-4 sm:pb-8 text-center flex-shrink-0">
       <button onclick="resetToBeginning()" class="px-5 py-2.5 sm:px-6 sm:py-3 border border-[#3D3A37] dark:border-[#EFE7E1] rounded-full text-[10px] sm:text-xs font-serif uppercase tracking-wider text-[#3D3A37] dark-text hover:bg-[#3D3A37] hover:text-[#F5EFEB] dark:hover:bg-[#EFE7E1] dark:hover:text-[#23211F] transition-all duration-300">
         RESTART ARCHIVE
@@ -601,11 +607,11 @@
       { start: "13:30", end: "14:00", title: "부서 복귀", desc: "식후 가벼운 티타임 및 포만감 만끽", color: "#ECE4DB" },
       { start: "14:00", end: "18:00", title: "좀비 모드 2단계", desc: "오후 피로와의 힘겨운 싸움, 무한 타이핑", color: "#D2D2D2" },
       { start: "18:00", end: "19:00", title: "퇴근 나이슷ㅋㅋ", desc: "드디어 무거운 해방! 집 또는 다음 장소를 향한 잰걸음", color: "#FBC4AB" },
-      { start: "19:00", end: "20:30", title: "하단 도착 & 동코", desc: "목청 높여 노래 부르며 스트레스 완벽 해소(선택)", color: "#FFD166" },
+      { start: "19:00", end: "20:30", title: "하단 도착 & 동전 노래방", desc: "목청 높여 노래 부르며 스트레스 완벽 해소(선택)", color: "#FFD166" },
       { start: "20:30", end: "21:00", title: "집 도착 후 샤워", desc: "바깥 먼지 씻어내고 온전한 홈웨어 모드로 전환", color: "#D3E0EA" },
       { start: "21:00", end: "23:00", title: "게임 시작", desc: "가장 순수하게 짜릿해지는 모험의 시간", color: "#A8DADC" },
       { start: "23:00", end: "24:00", title: "취침 준비", desc: "오늘 하루를 가라앉히는 릴랙스 시간", color: "#C4C4C4" },
-      { start: "00:00", end: "05:30", title: "글 기재 & 취침", desc: "SNS 일기 발행 후 내일을 위해 영면", color: "#9E9E9E" }
+      { start: "00:00", end: "05:30", title: "글 기재 후 영면", desc: "SNS 일기 발행 후 내일을 위해 영면", color: "#9E9E9E" }
     ];
 
     const MOCK_ADVICES = [
@@ -618,7 +624,7 @@
 
     // 방명록 인메모리 데이터 셋업 (기본 Mock 2종 포함)
     let guestbookComments = [
-      { author: "코드좀비", text: "14시에 진짜 좀비 되는 거 완전 극공감입니다ㅋㅋ 포트폴리오 야르하네요!", date: "2026.07.13" },
+      { author: "코드좀비", text: "14시에 진짜 좀비 되는 거 완전 극공감입니다ㅋㅋ 포트폴리오 너무 야르하네요!", date: "2026.07.13" },
       { author: "하단동 피바람", text: "동전 노래방에서 부르는 애창곡이 뭔지 궁금합니다! 다이어트 성공 축하드려요.", date: "2026.07.13" }
     ];
 
@@ -714,6 +720,13 @@
       body.classList.toggle('dark-mode');
       
       const isDarkMode = body.classList.contains('dark-mode');
+
+      // 활성화된 테마에 맞춰 html 태그에 'dark' 클래스 추가/제거 (Tailwind dark: 대응)
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
 
       // 1. 유틸리티성 Tailwind 컴포넌트 변환들을 세련되게 스크립트로 오버라이드 
       const darkCards = document.querySelectorAll('.dark-card');
