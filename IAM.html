@@ -356,7 +356,7 @@
         <!-- 대형 SVG 시계 -->
         <div class="relative w-full max-w-[340px] sm:max-w-[400px] aspect-square flex items-center justify-center">
           <svg id="clockSvg" viewBox="0 0 400 400" class="w-full h-full transform -rotate-90 select-none">
-            <!-- 시계 베이스 원 배경 (다크모드 대응을 위해 클래스 추가) -->
+            <!-- 시계 베이스 원 배경 -->
             <circle id="clockBaseCircle" cx="200" cy="200" r="180" fill="#FBF8F6" stroke="#D9CFC7" stroke-width="4"/>
             <!-- 24시간 중심축 눈금 및 디테일 서클 -->
             <circle cx="200" cy="200" r="130" fill="none" stroke="#E2D7CE" stroke-width="2" stroke-dasharray="5,5"/>
@@ -365,8 +365,8 @@
             <!-- JavaScript에서 동적으로 시간표 섹터를 렌더링합니다. -->
             <g id="sectorsContainer"></g>
 
-            <!-- 텍스트 시간 레이블 배치 (바깥 둘레) -->
-            <g id="clockLabels" font-size="11" font-weight="bold" fill="#6B7280" class="font-serif"></g>
+            <!-- 동적으로 주입될 경계선 시간 텍스트 레이블 컨테이너 -->
+            <g id="clockLabels" class="font-serif"></g>
           </svg>
         </div>
 
@@ -724,9 +724,10 @@
       const darkBodyColors = document.querySelectorAll('.dark-body-color');
       const darkToggleButtons = document.querySelectorAll('.dark-toggle-btn');
       
-      // 시계 요소들 변환
+      // 시계 및 텍스트 레이블 요소들 변환
       const clockBase = document.getElementById('clockBaseCircle');
       const centerPin = document.getElementById('centerPin');
+      const clockLabels = document.querySelectorAll('.clock-time-label');
 
       if (isDarkMode) {
         // 다크모드 적용
@@ -767,6 +768,7 @@
         if (centerPin) {
           centerPin.setAttribute('fill', '#F5EFEB');
         }
+        clockLabels.forEach(el => el.setAttribute('fill', '#C4B3A5'));
       } else {
         // 라이트모드 적용
         sunIcon.classList.remove('hidden');
@@ -806,6 +808,7 @@
         if (centerPin) {
           centerPin.setAttribute('fill', '#3D3A37');
         }
+        clockLabels.forEach(el => el.setAttribute('fill', '#6B7280'));
       }
     }
 
@@ -871,26 +874,19 @@
       });
     }
 
-    // 3. 24시간 원형 시계 드로잉 및 인터랙션 구축
-    function timeToDegrees(timeStr) {
-      const [hrs, mins] = timeStr.split(':').map(Number);
-      const totalMins = hrs * 60 + mins;
-      return totalMins * 0.25;
-    }
-
+    // 3. 24시간 원형 시계 드로잉 및 인터랙션 구축 (간격 15등분 균등화 반영)
     function initInteractiveClock() {
       const sectorsContainer = document.getElementById('sectorsContainer');
       const cx = 200;
       const cy = 200;
-      const r = 160;
+      const r = 140; // 시각 레이블을 동심원 내부(R: 160)에 우아하게 배치하기 위해 섹션 반지름을 140으로 조절
+
+      const totalItems = SCHEDULE_ITEMS.length;
+      const angleStep = 360 / totalItems; // 15개 섹션이므로 각각 정확히 24도씩 균등 분할
 
       SCHEDULE_ITEMS.forEach((item, idx) => {
-        const startDeg = timeToDegrees(item.start);
-        let endDeg = timeToDegrees(item.end);
-        
-        if (endDeg <= startDeg) {
-          endDeg += 360;
-        }
+        const startDeg = idx * angleStep;
+        const endDeg = (idx + 1) * angleStep;
 
         const startRad = (startDeg * Math.PI) / 180;
         const endRad = (endDeg * Math.PI) / 180;
@@ -900,8 +896,9 @@
         const x2 = cx + r * Math.cos(endRad);
         const y2 = cy + r * Math.sin(endRad);
 
-        const largeArcFlag = (endDeg - startDeg) > 180 ? 1 : 0;
+        const largeArcFlag = angleStep > 180 ? 1 : 0;
 
+        // 균등 부채꼴 SVG 패스 데이터 생성
         const pathData = `
           M ${cx} ${cy}
           L ${x1} ${y1}
@@ -923,24 +920,36 @@
         sectorsContainer.appendChild(path);
       });
 
+      // 4. 균등해진 섹터들 '사이'(경계선 위치)에 시간 레이블 표현
       const labelsContainer = document.getElementById('clockLabels');
-      for (let i = 0; i < 24; i += 3) {
-        const deg = i * 15;
+      const isDark = document.body.classList.contains('dark-mode');
+
+      SCHEDULE_ITEMS.forEach((item, idx) => {
+        const deg = idx * angleStep; // 각 섹션의 시작 경계 각도
         const rad = (deg * Math.PI) / 180;
-        const tx = cx + (r - 20) * Math.cos(rad);
-        const ty = cy + (r - 20) * Math.sin(rad);
+        
+        // 반경 160 지점에 배치 (R 140 섹터와 R 180 시계 테두리의 정중앙)
+        const tx = cx + 160 * Math.cos(rad);
+        const ty = cy + 160 * Math.sin(rad);
 
         const textNode = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         textNode.setAttribute('x', tx);
         textNode.setAttribute('y', ty);
         textNode.setAttribute('text-anchor', 'middle');
         textNode.setAttribute('alignment-baseline', 'middle');
+        textNode.setAttribute('font-size', '10.5');
+        textNode.setAttribute('font-weight', 'bold');
+        textNode.setAttribute('fill', isDark ? '#C4B3A5' : '#6B7280');
+        textNode.setAttribute('class', 'clock-time-label');
         
+        // 시계 회전(-90도)에 대응하여 글자만 바로 세워 가독성 보장
         textNode.setAttribute('transform', `rotate(90 ${tx} ${ty})`);
-        textNode.textContent = `${i}시`;
+        
+        // 경계면에 해당하는 시작 시간을 표기
+        textNode.textContent = item.start;
         
         labelsContainer.appendChild(textNode);
-      }
+      });
     }
 
     function updateDetailCard(item) {
